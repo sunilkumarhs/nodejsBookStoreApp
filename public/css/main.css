@@ -1,0 +1,97 @@
+body {
+  background-image: linear-gradient(
+    to right,
+    rgb(237, 197, 34),
+    rgb(226, 79, 21)
+  );
+  margin: 0;
+  padding: 0;
+}
+
+.main-section {
+  margin: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.main-section-heading {
+  background: linear-gradient(to left, rgb(9, 167, 235), rgb(238, 10, 10));
+  font-style: italic;
+  font-weight: bold;
+  color: white;
+  padding: 0.4rem;
+  border-radius: 5px;
+  margin: 1rem 0;
+  width: fit-content;
+}
+
+.main-section-prds {
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.card {
+  width: 12rem;
+  height: 16rem;
+  margin: 1rem;
+  padding: 0 0.5rem;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.card__header {
+  padding: 0.2rem 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+.prd__title {
+  padding: 0;
+  margin: 0;
+  font-size: large;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card__img {
+  width: 100%;
+  height: 8rem;
+}
+.img__dis {
+  width: 100%;
+  height: 100%;
+}
+.card__content {
+  padding: 0.2rem;
+}
+.prd__price {
+  padding: 0;
+  margin: 0;
+}
+.prd__description {
+  padding: 0.1rem;
+  margin: 0;
+  font-size: small;
+}
+.card__actions {
+  display: flex;
+  justify-content: center;
+}
+.btn {
+  padding: 0.3rem 0.5rem;
+  background-image: linear-gradient(
+    to right,
+    rgb(82, 177, 218),
+    rgb(215, 72, 72)
+  );
+  cursor: pointer;
+  color: white;
+}
+.btn:hover {
+  background-image: linear-gradient(
+    to left,
+    rgb(82, 177, 218),
+    rgb(215, 72, 72)
+  );
+}

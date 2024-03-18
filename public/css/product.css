@@ -1,0 +1,67 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-image: linear-gradient(
+    to right,
+    rgb(237, 197, 34),
+    rgb(226, 79, 21)
+  );
+}
+.main-section {
+  margin: 0.5rem;
+}
+.form-section {
+  padding: 0;
+  width: 30rem;
+  max-width: 90%;
+  margin: auto;
+}
+.form-title {
+  background: linear-gradient(to left, rgb(9, 167, 235), rgb(238, 10, 10));
+  font-style: italic;
+  font-weight: bold;
+  color: white;
+  padding: 0.4rem;
+  border-radius: 5px;
+  margin: 2rem 0;
+  width: fit-content;
+}
+.form-controler {
+  margin: 1rem 0;
+  text-align: left;
+}
+.form-controler label,
+.form-controler input {
+  display: block;
+  width: 90%;
+}
+.form-controler label {
+  font-size: large;
+  color: #149bbc;
+}
+.form-controler input {
+  border: 2px solid #d2b31a;
+  font: inherit;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+}
+.form-button {
+  font: inherit;
+  border-radius: 5px;
+  color: white;
+  background-image: linear-gradient(
+    to right,
+    rgb(82, 177, 218),
+    rgb(215, 72, 72)
+  );
+  padding: 0.2rem 0.5rem;
+}
+.form-button:hover {
+  background-image: linear-gradient(
+    to left,
+    rgb(82, 177, 218),
+    rgb(215, 72, 72)
+  );
+  color: white;
+  cursor: pointer;
+}
