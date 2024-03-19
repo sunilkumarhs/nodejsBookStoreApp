@@ -6,8 +6,17 @@ block styles
 block content 
     main.main-section 
             form.form-section(action="/admin/add-product", method="POST") 
-                h1.form-title Add Title of Books 
+                h1.form-title Add Details of Books 
                 div.form-controler 
                     label(for="productTitle") Title 
                     input(type="text",placeholder="Book-Title", name="productTitle")
-                button.form-button(type="submit") ADD 
+                div.form-controler 
+                    label(for="imageurl") ImageUrl 
+                    input(type="text",placeholder="Book-ImageUrl", name="imageurl")
+                div.form-controler 
+                    label(for="price") Price
+                    input(type="number",placeholder="Book-Price", name="price")
+                div.form-controler 
+                    label(for="description") Book-Description 
+                    textarea(name="description", rows="5") 
+                button.form-button(type="submit") ADD BOOK 

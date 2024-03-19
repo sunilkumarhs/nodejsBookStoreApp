@@ -8,10 +8,12 @@ body {
   );
 }
 .main-section {
-  margin: 0.5rem;
+  margin:0;
+  padding: 0;
 }
 .form-section {
   padding: 0;
+  margin:0;
   width: 30rem;
   max-width: 90%;
   margin: auto;
@@ -23,7 +25,7 @@ body {
   color: white;
   padding: 0.4rem;
   border-radius: 5px;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   width: fit-content;
 }
 .form-controler {
@@ -31,7 +33,8 @@ body {
   text-align: left;
 }
 .form-controler label,
-.form-controler input {
+.form-controler input, textarea
+ {
   display: block;
   width: 90%;
 }
@@ -39,8 +42,14 @@ body {
   font-size: large;
   color: #149bbc;
 }
-.form-controler input {
-  border: 2px solid #d2b31a;
+.form-controler input,textarea {
+  border: 2px solid #e8cb38;
+  font: inherit;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+}
+.form-controler input:focus,textarea:focus {
+  border: 2px solid #2ee547;
   font: inherit;
   border-radius: 5px;
   padding: 0.5rem 1rem;
@@ -54,7 +63,7 @@ body {
     rgb(82, 177, 218),
     rgb(215, 72, 72)
   );
-  padding: 0.2rem 0.5rem;
+  padding: 0.4rem 0.5rem;
 }
 .form-button:hover {
   background-image: linear-gradient(

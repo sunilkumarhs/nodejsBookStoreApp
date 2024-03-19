@@ -76,7 +76,7 @@ body {
 }
 .card__actions {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
 }
 .btn {
   padding: 0.3rem 0.5rem;
@@ -94,4 +94,36 @@ body {
     rgb(82, 177, 218),
     rgb(215, 72, 72)
   );
+}
+
+.book {
+  width: 100%;
+  height: 100%;
+  margin: 0rem 1rem;
+  padding: 0rem 0.5rem;
+}
+
+.book__header {
+  display: flex;
+  justify-content: center;
+}
+
+.book__title {
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+}
+
+.book__container {
+  display: flex;
+  padding: 0.5rem 0rem;
+}
+.book__img {
+  padding:0.5rem;
+  width: 40%;
+  height: 20rem;
+}
+
+.book__content {
+  padding: 0rem 1rem;
 }

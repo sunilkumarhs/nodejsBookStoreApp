@@ -1,4 +1,4 @@
-extends layouts/main_layout.pug
+extends ../layouts/main_layout.pug
 
 block styles 
     link(rel="stylesheet", href="/css/main.css")
@@ -10,15 +10,18 @@ block content
         div.main-section-prds 
             if prds.length > 0
                 each product in prds 
-                    div.card.prd-item
+                    div.card
                         header.card__header 
                             h1.prd__title #{product.title}
                         div.card__img 
-                            img.img__dis(src="https://img.etimg.com/photo/msid-102177218,imgsize-235452/YouCan%2CbyGeorgeMatthewAdams.jpg", alt="BookPhoto")
+                            img.img__dis(src=product.imageurl, alt=product.title)
                         div.card__content 
-                            h3.prd__price ₹ 186.00
-                            p.prd__description A very interesting book about so many life saver insights.
+                            h3.prd__price ₹ #{product.price}
+                            p.prd__description #{product.description}
                         div.card__actions 
-                            button.btn Add to Cart
+                            a(href="/products/"+product.id)
+                                button.btn Details 
+                            form(action="", method="POST") 
+                                button.btn Add to Cart
             else 
                 h1 No Books to Display!! 

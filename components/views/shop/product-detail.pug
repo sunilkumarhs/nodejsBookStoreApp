@@ -1,0 +1,24 @@
+extends ../layouts/main_layout.pug
+
+block styles 
+    link(rel="stylesheet", href="/css/main.css")
+
+block content 
+    main 
+        div.main-section
+            h1.main-section-heading Book Details 
+        div.main-section-prds 
+            div.book
+                header.book__header 
+                    h1.book__title #{product.title}
+                hr
+                div.book__container
+                    div.book__img 
+                        img.img__dis(src=product.imageurl, alt=product.title)
+                    div.book__content 
+                        h3.book__price ₹ #{product.price}
+                        p.book__description #{product.description}
+                        div.book__actions 
+                            form(action="/cart", method="POST") 
+                                button.btn Add to Cart
+                                input(type="hidden", name="productId", value=product.id)

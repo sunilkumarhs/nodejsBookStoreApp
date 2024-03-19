@@ -1,0 +1,27 @@
+extends ../layouts/main_layout.pug
+
+block styles 
+    link(rel="stylesheet", href="/css/main.css")
+
+block content 
+    main 
+        div.main-section
+            h1.main-section-heading Books Container 
+        div.main-section-prds 
+            if prds.length > 0
+                each product in prds 
+                    div.card
+                        header.card__header 
+                            h1.prd__title #{product.title}
+                        div.card__img 
+                            img.img__dis(src=product.imageurl, alt=product.title)
+                        div.card__content 
+                            h3.prd__price ₹ #{product.price}
+                            p.prd__description #{product.description}
+                        div.card__actions
+                            a(href="") 
+                                button.btn Edit
+                            form(action="", method="POST")  
+                                button.btn Delete
+            else 
+                h1 No Books to Display!! 
