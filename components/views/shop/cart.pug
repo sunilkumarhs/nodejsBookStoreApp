@@ -1,1 +1,26 @@
 extends ../layouts/main_layout.pug
+
+block styles 
+    link(rel="stylesheet", href="/css/main.css")
+
+block content 
+    main 
+        div.main-section
+            h1.main-section-heading Cart Container 
+        div.main-section-prds 
+            if cartProducts.length > 0
+                each product in cartProducts 
+                    div.card
+                        header.card__header 
+                            h1.prd__title #{product.title}
+                        div.card__img 
+                            img.img__dis(src=product.imageurl, alt=product.title)
+                        div.card__content 
+                            h3.prd__price ₹ #{product.price}
+                            p.prd__description #{product.description}
+                        div.card__actions 
+                            form(action="/cart", method="POST") 
+                                button.btn Delete
+                                input(type="hidden", name="productId", value=product.id)
+            else 
+                h1 Cart is Empty!! 

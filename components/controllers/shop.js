@@ -1,4 +1,5 @@
 const ProductModel = require("../models/product");
+const CartModel = require("../models/cart");
 
 exports.getIndex = (req, res, next) => {
   ProductModel.getProducts((products) => {
@@ -31,15 +32,31 @@ exports.getProductDetail = (req, res, next) => {
 };
 
 exports.getCartProdcuts = (req, res, next) => {
-  res.render("shop/cart", {
-    docTitle: "Your Cart",
-    path: "/cart",
+  ProductModel.getProducts((products) => {
+    CartModel.getCartPrds((cartPrds) => {
+      const cartProducts = products?.reduce((cart, prd) => {
+        cartPrds?.products?.map((p) => {
+          if (p.id === prd.id) {
+            cart.push(prd);
+          }
+        });
+        return cart;
+      }, []);
+      res.render("shop/cart", {
+        docTitle: "Your Cart",
+        cartProducts: cartProducts,
+        cartPrds: cartPrds,
+        path: "/cart",
+      });
+    });
   });
 };
 
 exports.postCartProduct = (req, res, next) => {
   const prdId = req.body.productId;
-  console.log(prdId);
+  ProductModel.getProductById(prdId, (product) => {
+    CartModel.cartProducer(prdId, product.price);
+  });
   res.redirect("/");
 };
 

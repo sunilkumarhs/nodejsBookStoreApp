@@ -73,6 +73,12 @@ body {
   padding: 0.1rem;
   margin: 0;
   font-size: small;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+          line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .card__actions {
   display: flex;

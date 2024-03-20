@@ -23,9 +23,9 @@ module.exports = class ProductStore {
 
   save() {
     this.id = Math.random().toString();
-    getProductFile((prodcuts) => {
-      prodcuts.push(this);
-      fs.writeFile(p, JSON.stringify(prodcuts), (err) => {
+    getProductFile((products) => {
+      products.push(this);
+      fs.writeFile(p, JSON.stringify(products), (err) => {
         if (err) {
           console.log(err);
         }
@@ -43,4 +43,29 @@ module.exports = class ProductStore {
       cb(product);
     });
   }
+  updateProduct(id) {
+    this.id = id;
+    getProductFile((products) => {
+      const productIndex = products.findIndex((p) => p.id === id);
+      products[productIndex] = this;
+      fs.writeFile(p, JSON.stringify(products), (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    });
+  }
+
+  static deleteProduct(id) {
+    getProductFile((products) => {
+      const productIndex = products.findIndex((p) => p.id === id);
+      products.splice(productIndex,1);
+      fs.writeFile(p, JSON.stringify(products), (err) => {
+        if(err) {
+          console.log(err);
+        }
+      })
+    })
+  }
+
 };

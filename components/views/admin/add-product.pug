@@ -5,18 +5,19 @@ block styles
 
 block content 
     main.main-section 
-            form.form-section(action="/admin/add-product", method="POST") 
-                h1.form-title Add Details of Books 
+            //- form.form-section(action="/admin/"+editProduct ? "edit-product/"+product.id : "add-product", method="POST") 
+            form.form-section(action=`${editProduct ? "/admin/edit-product/"+product.id : "/admin/add-product"}`, method="POST")
+                h1.form-title #{heading} 
                 div.form-controler 
                     label(for="productTitle") Title 
-                    input(type="text",placeholder="Book-Title", name="productTitle")
+                    input(type="text",placeholder="Book-Title", name="productTitle", value=editProduct ? product.title : "")
                 div.form-controler 
                     label(for="imageurl") ImageUrl 
-                    input(type="text",placeholder="Book-ImageUrl", name="imageurl")
+                    input(type="text",placeholder="Book-ImageUrl", name="imageurl", value=editProduct ? product.imageurl : "")
                 div.form-controler 
                     label(for="price") Price
-                    input(type="number",placeholder="Book-Price", name="price")
+                    input(type="number",placeholder="Book-Price", name="price", value=editProduct ? product.price : "", step=0.01)
                 div.form-controler 
                     label(for="description") Book-Description 
-                    textarea(name="description", rows="5") 
-                button.form-button(type="submit") ADD BOOK 
+                    textarea(name="description", rows="5") #{editProduct ? product.description : ""} 
+                button.form-button(type="submit") #{buttonWord} 
