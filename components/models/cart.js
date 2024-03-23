@@ -31,7 +31,7 @@ const updateCart = (id, prdPrice, cart, cb) => {
 const getProducts = (cb) => {
   fs.readFile(p, (err, filecontent) => {
     if (err) {
-      return cb([]);
+      return cb({ products: [], totalPrice: 0 });
     }
     return cb(JSON.parse(filecontent));
   });
@@ -50,5 +50,21 @@ module.exports = class CartContainer {
   }
   static getCartPrds(cb) {
     getProducts(cb);
+  }
+  static deleteCartProduct(prdId, prdPrice) {
+    getProducts((cartProducts) => {
+      const deleteProductIndex = cartProducts.products.findIndex(
+        (p) => p.id === prdId
+      );
+      const reducePrice =
+        cartProducts.products[deleteProductIndex].qty * prdPrice;
+      cartProducts.products.splice(deleteProductIndex, 1);
+      cartProducts.totalPrice = cartProducts.totalPrice - reducePrice;
+      fs.writeFile(p, JSON.stringify(cartProducts), (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    });
   }
 };

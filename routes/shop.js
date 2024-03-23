@@ -10,4 +10,8 @@ routes.get("/cart", shopController.getCartProdcuts);
 routes.get("/orders", shopController.getOrderedProdcuts);
 routes.post("/cart", shopController.postCartProduct);
 routes.get("/checkout", shopController.getCheckoutProdcuts);
+routes.post(
+  "/delete-product/:productId/:productPrice",
+  shopController.postDeleteProduct
+);
 module.exports = routes;

@@ -57,7 +57,14 @@ exports.postCartProduct = (req, res, next) => {
   ProductModel.getProductById(prdId, (product) => {
     CartModel.cartProducer(prdId, product.price);
   });
-  res.redirect("/");
+  res.redirect("/cart");
+};
+
+exports.postDeleteProduct = (req, res, next) => {
+  const prdId = req.params.productId;
+  const prdPrice = req.params.productPrice;
+  CartModel.deleteCartProduct(prdId, prdPrice);
+  res.redirect("/cart");
 };
 
 exports.getOrderedProdcuts = (req, res, next) => {

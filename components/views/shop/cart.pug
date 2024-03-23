@@ -1,26 +1,67 @@
 extends ../layouts/main_layout.pug
 
 block styles 
-    link(rel="stylesheet", href="/css/main.css")
+    link(rel="stylesheet", href="/css/cart.css")
 
 block content 
     main 
         div.main-section
             h1.main-section-heading Cart Container 
-        div.main-section-prds 
-            if cartProducts.length > 0
-                each product in cartProducts 
-                    div.card
-                        header.card__header 
-                            h1.prd__title #{product.title}
-                        div.card__img 
-                            img.img__dis(src=product.imageurl, alt=product.title)
-                        div.card__content 
-                            h3.prd__price ₹ #{product.price}
-                            p.prd__description #{product.description}
-                        div.card__actions 
-                            form(action="/cart", method="POST") 
-                                button.btn Delete
-                                input(type="hidden", name="productId", value=product.id)
-            else 
-                h1 Cart is Empty!! 
+            h2.main-section-items #{cartPrds.products.length > 0 ? cartPrds.products.length : 0} items
+        if cartProducts.length > 0
+            div.cart-container 
+                table.cart__table
+                    tr.table__header
+                        th ItemDetails
+                        th Price
+                        th Quantity
+                        th Subtotal
+                    each product in cartProducts 
+                        tr.table__rows
+                            th 
+                                div.prd__details 
+                                    div.prd__img 
+                                        img.img__dis(src=product.imageurl, alt=product.title) 
+                                    p #{product.title}
+                                    form.delete__action(action="/delete-product/"+product.id+"/"+product.price, method="POST")  
+                                        button.btn Remove
+                            th.prd__col #{product.price}
+                            each prd in cartPrds.products 
+                                if prd.id === product.id
+                                    th.prd__col #{prd.qty}
+                                    th.prd__col #{prd.qty * product.price}
+            div.totalPrice__container 
+                div.sec1 
+                    p Delivery and payment options can be selected later
+                    p Safe and Secure Payments
+                    p 100% Payment Protection, Easy Returns Policy 
+                div.sec2 
+                    p Total Price: 
+                    p Delivery Charges:
+                div.sec3
+                    p Rs. #{cartPrds.totalPrice}
+                    p.free FREE
+                div.sec4 
+                    button PROCEED TO PAY Rs. #{cartPrds.totalPrice}
+        else 
+            h1(style="text-align:center") Cart is Empty!! 
+                
+            //- div.cart__section__header 
+            //-     p.section__title item Details 
+            //-     p.section__title Price
+            //-     p.section__title Quantity
+            //-     p.section__title Subtotal
+            //- if cartProducts.length > 0
+            //-     each product in cartProducts 
+                    //- div.card
+                    //-     header.card__header 
+                    //-         h1.prd__title #{product.title}
+                    //-     div.card__img 
+                    //-         img.img__dis(src=product.imageurl, alt=product.title)
+                    //-     div.card__content 
+                    //-         h3.prd__price ₹ #{product.price}
+                    //-         p.prd__description #{product.description}
+                    //-     div.card__actions 
+                    //-         form(action="/cart", method="POST") 
+                    //-             button.btn Delete
+                    //-             input(type="hidden", name="productId", value=product.id)
