@@ -1,4 +1,6 @@
+const { Json } = require("sequelize/lib/utils");
 const ProductModel = require("../models/product");
+const { where } = require("sequelize");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/add-product", {
@@ -15,15 +17,23 @@ exports.getPostProduct = (req, res, next) => {
   const imgUrl = req.body.imgUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new ProductModel(productTitle, imgUrl, price, description);
-  product
-    .save()
-    .then(() => {
-      res.redirect("/admin/products");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  ProductModel.create({
+    title: productTitle,
+    price: price,
+    description: description,
+    imgUrl: imgUrl,
+  })
+    .then(() => res.redirect("/admin/products"))
+    .catch((err) => console.log(err));
+  // const product = new ProductModel(productTitle, imgUrl, price, description);
+  // product
+  //   .save()
+  //   .then(() => {
+  //     res.redirect("/admin/products");
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -32,16 +42,18 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/admin/products");
   }
   const prdId = req.params.productId;
-  ProductModel.getProductById(prdId).then(([row, fieldData]) => {
-    res.render("admin/add-product", {
-      docTitle: "Edit-Product Page",
-      heading: "Edit Details of Book",
-      buttonWord: "SAVE BOOK",
-      path: "/admin/edit-product",
-      product: row,
-      editProduct: editMode,
-    });
-  });
+  ProductModel.findByPk(prdId)
+    .then((product) =>
+      res.render("admin/add-product", {
+        docTitle: "Edit-Product Page",
+        heading: "Edit Details of Book",
+        buttonWord: "SAVE BOOK",
+        path: "/admin/edit-product",
+        product: product,
+        editProduct: editMode,
+      })
+    )
+    .catch((err) => console.log(err));
 };
 
 exports.getPostEditProduct = (req, res, next) => {
@@ -50,38 +62,34 @@ exports.getPostEditProduct = (req, res, next) => {
   const imgUrl = req.body.imgUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new ProductModel(productTitle, imgUrl, price, description);
-  product
-    .updateProduct(prdId)
-    .then(() => {
-      res.redirect("/admin/products");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  ProductModel.update(
+    {
+      title: productTitle,
+      price: price,
+      description: description,
+      imgUrl: imgUrl,
+    },
+    { where: { id: prdId } }
+  )
+    .then(() => res.redirect("/admin/products"))
+    .catch((err) => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  ProductModel.getProducts()
-    .then(([rows, fieldData]) => {
+  ProductModel.findAll()
+    .then((products) =>
       res.render("admin/products", {
-        prds: rows,
+        prds: products,
         docTitle: "Admin-Products Page",
         path: "/admin/products",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      })
+    )
+    .catch((err) => console.log(err));
 };
 
 exports.getDeleteCompleted = (req, res, next) => {
   const prdId = req.params.productId;
-  ProductModel.deleteProduct(prdId)
-    .then(() => {
-      res.redirect("/admin/products");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  ProductModel.destroy({ where: { id: prdId } })
+    .then(() => res.redirect("/admin/products"))
+    .catch((err) => console.log(err));
 };
