@@ -10,15 +10,15 @@ block content
         div.main-section-prds 
             div.book
                 header.book__header 
-                    h1.book__title #{product.title}
+                    h1.book__title #{product[0].title}
                 hr
                 div.book__container
                     div.book__img 
-                        img.img__dis(src=product.imageurl, alt=product.title)
+                        img.img__dis(src=product[0].imgUrl, alt=product[0].title)
                     div.book__content 
-                        h3.book__price ₹ #{product.price}
-                        p.book__description #{product.description}
+                        h3.book__price ₹ #{product[0].price}
+                        p.book__description #{product[0].description}
                         div.book__actions 
                             form(action="/cart", method="POST") 
                                 button.btn Add to Cart
-                                input(type="hidden", name="productId", value=product.id)
+                                input(type="hidden", name="productId", value=product[0].id)

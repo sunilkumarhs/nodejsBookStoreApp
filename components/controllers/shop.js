@@ -2,33 +2,45 @@ const ProductModel = require("../models/product");
 const CartModel = require("../models/cart");
 
 exports.getIndex = (req, res, next) => {
-  ProductModel.getProducts((products) => {
-    res.render("shop/index", {
-      prds: products,
-      docTitle: "Index Page",
-      path: "/",
+  ProductModel.getProducts()
+    .then(([rows, fieldData]) => {
+      res.render("shop/index", {
+        prds: rows,
+        docTitle: "Index Page",
+        path: "/",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
 
 exports.getDisplayProducts = (req, res, next) => {
-  ProductModel.getProducts((products) => {
-    res.render("shop/product-list", {
-      prds: products,
-      docTitle: "Book-List Page",
-      path: "/products",
+  ProductModel.getProducts()
+    .then(([rows, fieldData]) => {
+      res.render("shop/product-list", {
+        prds: rows,
+        docTitle: "Book-List Page",
+        path: "/products",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
 
 exports.getProductDetail = (req, res, next) => {
   const prdId = req.params.productId;
-  ProductModel.getProductById(prdId, (prd) => {
-    res.render("shop/product-detail", {
-      product: prd,
-      docTitle: "Book Details",
+  ProductModel.getProductById(prdId)
+    .then(([row, fieldData]) => {
+      res.render("shop/product-detail", {
+        product: row,
+        docTitle: "Book Details",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
 
 exports.getCartProdcuts = (req, res, next) => {

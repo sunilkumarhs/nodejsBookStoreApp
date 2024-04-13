@@ -126,10 +126,11 @@ body {
 }
 .book__img {
   padding:0.5rem;
-  width: 40%;
+  width: 30%;
   height: 20rem;
 }
 
 .book__content {
+  width: 70%;
   padding: 0rem 1rem;
 }
