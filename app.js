@@ -7,6 +7,8 @@ const errorController = require("./components/controllers/error");
 const sequelize = require("./utils/database");
 const Product = require("./components/models/product");
 const User = require("./components/models/user");
+const Cart = require("./components/models/cart");
+const CartItem = require("./components/models/cart-item");
 
 const app = express();
 
@@ -31,19 +33,26 @@ app.use(errorController.getErrorPage);
 
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
-  .sync({ force: true })
-  .then(() => {
-    User.findByPk(1);
+  .sync()
+  .then((result) => {
+    return User.findByPk(1);
   })
   .then((user) => {
     if (!user) {
-      User.create({ name: "Sunil", email: "puppet1718@gmail.com" });
+      return User.create({ name: "Sunil", email: "puppet1718@gmail.com" });
     }
     return user;
   })
-  .then((user) => app.listen(3000))
+  .then((user) => {
+    return user.createCart();
+  })
+  .then((cart) => app.listen(3000))
   .catch((err) => {
     console.log(err);
   });

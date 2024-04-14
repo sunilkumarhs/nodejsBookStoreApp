@@ -7,7 +7,7 @@ block content
     main 
         div.main-section
             h1.main-section-heading Cart Container 
-            h2.main-section-items #{cartPrds.products.length > 0 ? cartPrds.products.length : 0} items
+            h2.main-section-items #{cartPrds.length > 0 ? cartPrds.length : 0} items
         if cartProducts.length > 0
             div.cart-container 
                 table.cart__table
@@ -26,10 +26,12 @@ block content
                                     form.delete__action(action="/delete-product/"+product.id+"/"+product.price, method="POST")  
                                         button.btn Remove
                             th.prd__col #{product.price}
-                            each prd in cartPrds.products 
-                                if prd.id === product.id
-                                    th.prd__col #{prd.qty}
-                                    th.prd__col #{prd.qty * product.price}
+                            th.prd__col #{product.cartItem.quantity}
+                            th.prd__col #{product.cartItem.quantity * product.price}
+                            //- each prd in cartPrds 
+                            //-     if prd.id === product.id
+                            //-         th.prd__col #{prd.qty}
+                            //-         th.prd__col #{prd.qty * product.price}
             div.totalPrice__container 
                 div.sec1 
                     p Delivery and payment options can be selected later
