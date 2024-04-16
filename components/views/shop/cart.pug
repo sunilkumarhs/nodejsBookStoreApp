@@ -23,7 +23,7 @@ block content
                                     div.prd__img 
                                         img.img__dis(src=product.imgUrl, alt=product.title) 
                                     p #{product.title}
-                                    form.delete__action(action="/delete-product/"+product.id+"/"+product.price, method="POST")  
+                                    form.delete__action(action="/delete-product/"+product.id, method="POST")  
                                         button.btn Remove
                             th.prd__col #{product.price}
                             th.prd__col #{product.cartItem.quantity}
@@ -46,8 +46,9 @@ block content
                         - totalPrice = totalPrice + (prd.cartItem.quantity * prd.price)
                     p Rs. #{totalPrice}
                     p.free FREE
-                div.sec4 
-                    button PROCEED TO PAY Rs. #{totalPrice}
+                div.sec4
+                    form(action="/post-orders", method="POST")  
+                        button ORDER NOW!
         else 
             h1(style="text-align:center") Cart is Empty!! 
                 
