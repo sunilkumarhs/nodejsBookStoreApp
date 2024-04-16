@@ -1,6 +1,7 @@
 const ProductModel = require("../models/product");
 const CartModel = require("../models/cart");
 const Product = require("../models/product");
+const { where } = require("sequelize");
 
 exports.getIndex = (req, res, next) => {
   ProductModel.findAll()
@@ -47,7 +48,6 @@ exports.getCartProdcuts = (req, res, next) => {
         res.render("shop/cart", {
           docTitle: "Your Cart",
           cartProducts: products,
-          cartPrds: products,
           path: "/cart",
         });
       });
@@ -76,31 +76,32 @@ exports.getCartProdcuts = (req, res, next) => {
 exports.postCartProduct = (req, res, next) => {
   const prdId = req.body.productId;
   let fetchedCart;
+  let newQuantity = 1;
   req.user
     .getCart()
     .then((cart) => {
       fetchedCart = cart;
-      cart
-        .getProducts()
-        .then((products) => {
-          let product;
-          if (products.length > 0) {
-            product = products[0];
-          }
-          let setQuantity = 1;
-          if (product) {
-          }
-          return Product.findByPk(prdId)
-            .then((product) => {
-              return fetchedCart.addProduct(product, {
-                through: { quantity: setQuantity },
-              });
-            })
-            .catch((err) => console.log(err));
-        })
-        .then(() => {
-          res.redirect("/cart");
-        });
+      return cart.getProducts({ where: { id: prdId } });
+    })
+    .then((products) => {
+      let product;
+      if (products.length > 0) {
+        product = products[0];
+      }
+      if (product) {
+        const oldQuantity = product.cartItem.quantity;
+        newQuantity = oldQuantity + 1;
+        return product;
+      }
+      return Product.findByPk(prdId);
+    })
+    .then((product) => {
+      return fetchedCart.addProduct(product, {
+        through: { quantity: newQuantity },
+      });
+    })
+    .then(() => {
+      res.redirect("/cart");
     })
     .catch((err) => console.log(err));
   // ProductModel.getProductById(prdId, (product) => {
@@ -111,9 +112,22 @@ exports.postCartProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prdId = req.params.productId;
-  const prdPrice = req.params.productPrice;
-  CartModel.deleteCartProduct(prdId, prdPrice);
-  res.redirect("/cart");
+  req.user
+    .getCart()
+    .then((cart) => {
+      fetchedCart = cart;
+      return cart.getProducts({ where: { id: prdId } });
+    })
+    .then((product) => {
+      fetchedCart.removeProduct(product, { where: { id: prdId } });
+    })
+    .then(() => {
+      res.redirect("/cart");
+    })
+    .catch((err) => console.log(err));
+  // const prdPrice = req.params.productPrice;
+  // CartModel.deleteCartProduct(prdId, prdPrice);
+  // res.redirect("/cart");
 };
 
 exports.getOrderedProdcuts = (req, res, next) => {

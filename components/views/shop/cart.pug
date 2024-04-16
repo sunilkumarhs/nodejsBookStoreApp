@@ -7,7 +7,7 @@ block content
     main 
         div.main-section
             h1.main-section-heading Cart Container 
-            h2.main-section-items #{cartPrds.length > 0 ? cartPrds.length : 0} items
+            h2.main-section-items #{cartProducts.length > 0 ? cartProducts.length : 0} items
         if cartProducts.length > 0
             div.cart-container 
                 table.cart__table
@@ -21,7 +21,7 @@ block content
                             th 
                                 div.prd__details 
                                     div.prd__img 
-                                        img.img__dis(src=product.imageurl, alt=product.title) 
+                                        img.img__dis(src=product.imgUrl, alt=product.title) 
                                     p #{product.title}
                                     form.delete__action(action="/delete-product/"+product.id+"/"+product.price, method="POST")  
                                         button.btn Remove
@@ -41,10 +41,13 @@ block content
                     p Total Price: 
                     p Delivery Charges:
                 div.sec3
-                    p Rs. #{cartPrds.totalPrice}
+                    - let totalPrice = 0
+                    each prd in cartProducts
+                        - totalPrice = totalPrice + (prd.cartItem.quantity * prd.price)
+                    p Rs. #{totalPrice}
                     p.free FREE
                 div.sec4 
-                    button PROCEED TO PAY Rs. #{cartPrds.totalPrice}
+                    button PROCEED TO PAY Rs. #{totalPrice}
         else 
             h1(style="text-align:center") Cart is Empty!! 
                 
