@@ -7,9 +7,9 @@ block content
     main 
         div.main-section
             h1.main-section-heading Orders Container 
-            //- h2.main-section-items #{orderProducts.length > 0 ? orderProducts.length : 0} items
+            h2.main-section-items #{orderProducts.length > 0 ? orderProducts.length : 0} orders
         if orderProducts.length > 0
-            div.cart-container 
+            div.order-container 
                 table.cart__table
                     tr.table__header
                         th OrderID
@@ -35,25 +35,27 @@ block content
                                             th.prd__col #{product.price}
                                             th.prd__col #{product.orderItem.quantity}
                                             th.prd__col #{product.orderItem.quantity * product.price}
-                            th.prd__col cancle
+                            th
+                                form.delete__action(action="/delete-order/"+order.id, method="POST")  
+                                        button.btn Cancle
                         
-            div.totalPrice__container 
-                div.sec1 
-                    p Delivery and payment options can be selected later
-                    p Safe and Secure Payments
-                    p 100% Payment Protection, Easy Returns Policy 
-                div.sec2 
-                    p Total Price: 
-                    p Delivery Charges:
-                div.sec3
-                    - let totalPrice = 0
-                    each order in orderProducts
-                        each prd in order.products
-                            - totalPrice = totalPrice + (prd.orderItem.quantity * prd.price)
-                    p Rs. #{totalPrice}
-                    p.free FREE
-                div.sec4
-                    form(action="/post-orders", method="POST")  
-                        button PROCEED TO PAY Rs. #{totalPrice}
+            //- div.totalPrice__container 
+            //-     div.sec1 
+            //-         p Delivery and payment options can be selected later
+            //-         p Safe and Secure Payments
+            //-         p 100% Payment Protection, Easy Returns Policy 
+            //-     div.sec2 
+            //-         p Total Price: 
+            //-         p Delivery Charges:
+            //-     div.sec3
+            //-         - let totalPrice = 0
+            //-         each order in orderProducts
+            //-             each prd in order.products
+            //-                 - totalPrice = totalPrice + (prd.orderItem.quantity * prd.price)
+            //-         p Rs. #{totalPrice}
+            //-         p.free FREE
+            //-     div.sec4
+            //-         form(action="/post-orders", method="POST")  
+            //-             button PROCEED TO PAY Rs. #{totalPrice}
         else 
             h1(style="text-align:center") No Orders Placed!! 

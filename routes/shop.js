@@ -12,4 +12,5 @@ routes.post("/cart", shopController.postCartProduct);
 routes.get("/checkout", shopController.getCheckoutProdcuts);
 routes.post("/delete-product/:productId", shopController.postDeleteProduct);
 routes.post("/post-orders", shopController.postOrderProducts);
+routes.post("/delete-order/:orderId", shopController.postDeleteOrder);
 module.exports = routes;

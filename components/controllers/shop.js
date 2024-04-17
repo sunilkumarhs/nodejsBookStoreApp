@@ -2,6 +2,7 @@ const ProductModel = require("../models/product");
 const CartModel = require("../models/cart");
 const Product = require("../models/product");
 const { where } = require("sequelize");
+const Order = require("../models/orders");
 
 exports.getIndex = (req, res, next) => {
   ProductModel.findAll()
@@ -162,7 +163,6 @@ exports.getOrderedProdcuts = (req, res, next) => {
   req.user
     .getOrders({ include: ["products"] })
     .then((orders) => {
-      console.log(orders);
       res.render("shop/orders", {
         docTitle: "Your Orders",
         orderProducts: orders,
@@ -182,6 +182,31 @@ exports.getOrderedProdcuts = (req, res, next) => {
   //       });
   //     });
   // })
+};
+
+exports.postDeleteOrder = (req, res, next) => {
+  const orderId = req.params.orderId;
+  let fetchedOrders;
+  req.user
+    .getOrders({ include: ["products"] })
+    .then((orders) => {
+      fetchedOrders = orders;
+      return orders.find((order) => order.dataValues.id == orderId);
+    })
+    .then((order) => {
+      console.log(order.products);
+      order.products.map((product) => {
+        order.removeProduct(product, { where: { id: product.id } });
+      });
+      Order.destroy({ where: { id: order.id } });
+      // fetchedOrders.removeProduct(order, { where: { id: orderId } });
+    })
+    .then(() => {
+      res.redirect("/orders");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.getCheckoutProdcuts = (req, res, next) => {
