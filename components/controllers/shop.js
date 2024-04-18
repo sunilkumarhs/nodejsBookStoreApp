@@ -186,20 +186,16 @@ exports.getOrderedProdcuts = (req, res, next) => {
 
 exports.postDeleteOrder = (req, res, next) => {
   const orderId = req.params.orderId;
-  let fetchedOrders;
   req.user
     .getOrders({ include: ["products"] })
     .then((orders) => {
-      fetchedOrders = orders;
       return orders.find((order) => order.dataValues.id == orderId);
     })
     .then((order) => {
-      console.log(order.products);
       order.products.map((product) => {
         order.removeProduct(product, { where: { id: product.id } });
       });
       Order.destroy({ where: { id: order.id } });
-      // fetchedOrders.removeProduct(order, { where: { id: orderId } });
     })
     .then(() => {
       res.redirect("/orders");
