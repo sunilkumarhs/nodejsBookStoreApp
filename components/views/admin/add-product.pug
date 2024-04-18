@@ -6,7 +6,7 @@ block styles
 block content 
     main.main-section 
             //- form.form-section(action="/admin/"+editProduct ? "edit-product/"+product.id : "add-product", method="POST") 
-            form.form-section(action=`${editProduct ? "/admin/edit-product/"+product.id : "/admin/add-product"}`, method="POST")
+            form.form-section(action=`${editProduct ? "/admin/edit-product/"+product._id : "/admin/add-product"}`, method="POST")
                 h1.form-title #{heading} 
                 div.form-controler 
                     label(for="productTitle") Title 

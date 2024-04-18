@@ -19,9 +19,9 @@ block content
                             h3.prd__price ₹ #{product.price}
                             p.prd__description #{product.description}
                         div.card__actions
-                            a(href="edit-product/"+product.id+"/?edit=true") 
+                            a(href="edit-product/"+product._id+"/?edit=true") 
                                 button.btn Edit
-                            form(action="/admin/delete-product/"+product.id, method="POST")  
+                            form(action="/admin/delete-product/"+product._id, method="POST")  
                                 button.btn Delete
             else 
                 h1 No Books to Display!! 

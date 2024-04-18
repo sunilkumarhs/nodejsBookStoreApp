@@ -19,10 +19,10 @@ block content
                             h3.prd__price ₹ #{product.price}
                             p.prd__description #{product.description}
                         div.card__actions 
-                            a(href="/products/"+product.id)
+                            a(href="/products/"+product._id)
                                 button.btn Details 
                             form(action="/cart", method="POST") 
                                 button.btn Add to Cart
-                                input(type="hidden", name="productId", value=product.id)
+                                input(type="hidden", name="productId", value=product._id)
             else 
                 h1 No Books to Display!! 
