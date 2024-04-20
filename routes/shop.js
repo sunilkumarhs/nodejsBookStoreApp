@@ -8,7 +8,7 @@ routes.get("/products", shopController.getDisplayProducts);
 routes.get("/products/:productId", shopController.getProductDetail);
 // routes.get("/cart", shopController.getCartProdcuts);
 // routes.get("/orders", shopController.getOrderedProdcuts);
-// routes.post("/cart", shopController.postCartProduct);
+routes.post("/cart", shopController.postCartProduct);
 // routes.get("/checkout", shopController.getCheckoutProdcuts);
 // routes.post("/delete-product/:productId", shopController.postDeleteProduct);
 // routes.post("/post-orders", shopController.postOrderProducts);

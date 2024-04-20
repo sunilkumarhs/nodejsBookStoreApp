@@ -24,7 +24,13 @@ exports.getPostProduct = (req, res, next) => {
   //   })
   //   .then(() => res.redirect("/admin/products"))
   //   .catch((err) => console.log(err));
-  const product = new ProductModel(productTitle, price, description, imgUrl);
+  const product = new ProductModel(
+    productTitle,
+    price,
+    description,
+    imgUrl,
+    req.user._id
+  );
   product
     .save()
     .then(() => {
