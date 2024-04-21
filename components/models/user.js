@@ -76,6 +76,15 @@ class User {
       );
   }
 
+  removeOrder(id) {
+    const db = getDb();
+    return db
+      .collection("orders")
+      .deleteOne({ _id: new mongoDb.ObjectId(id) })
+      .then((result) => console.log("Order deleted!"))
+      .catch((err) => console.log(err));
+  }
+
   static fetchCart(id) {
     const db = getDb();
     return db
@@ -83,6 +92,18 @@ class User {
       .findOne({ _id: id })
       .then((user) => {
         return user.cart.items;
+      })
+      .catch((err) => console.log(err));
+  }
+
+  static fetchOrder(id) {
+    const db = getDb();
+    return db
+      .collection("orders")
+      .find({ userId: id })
+      .toArray()
+      .then((orders) => {
+        return orders;
       })
       .catch((err) => console.log(err));
   }

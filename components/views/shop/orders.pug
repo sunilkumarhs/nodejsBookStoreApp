@@ -7,17 +7,17 @@ block content
     main 
         div.main-section
             h1.main-section-heading Orders Container 
-            h2.main-section-items #{orderProducts.length > 0 ? orderProducts.length : 0} orders
-        if orderProducts.length > 0
+            h2.main-section-items #{orderDetails.length > 0 ? orderDetails.length : 0} orders
+        if orderDetails.length > 0
             div.order-container 
                 table.cart__table
                     tr.table__header
-                        th OrderID
+                        th Order#
                         th OrderDetails
                         th Action
-                    each order in orderProducts
+                    each order in orderDetails
                         tr.table__rows
-                            th.prd__col #{order.id}
+                            th.prd__col #{order.orderId}
                             th
                                 table.cart__table
                                     tr.table__header 
@@ -25,7 +25,7 @@ block content
                                         th Price
                                         th Quantity
                                         th Subtotal
-                                    each product in order.products
+                                    each product in order.orderItems
                                         tr.table__rows 
                                             th 
                                                 div.prd__details 
@@ -33,10 +33,10 @@ block content
                                                         img.img__dis(src=product.imgUrl, alt=product.title) 
                                                     p #{product.title}
                                             th.prd__col #{product.price}
-                                            th.prd__col #{product.orderItem.quantity}
-                                            th.prd__col #{product.orderItem.quantity * product.price}
+                                            th.prd__col #{product.quantity}
+                                            th.prd__col #{product.quantity * product.price}
                             th
-                                form.delete__action(action="/delete-order/"+order.id, method="POST")  
+                                form.delete__action(action="/delete-order/"+order.orderId, method="POST")  
                                         button.btn Cancle
                         
             //- div.totalPrice__container 

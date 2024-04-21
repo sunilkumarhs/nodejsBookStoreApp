@@ -152,7 +152,7 @@ exports.postDeleteProduct = (req, res, next) => {
 exports.postOrderProducts = (req, res, next) => {
   req.user
     .order()
-    .then((result) => console.log(result))
+    .then((result) => res.redirect("/orders"))
     .catch((err) => console.log(err));
   // let fetchedCart;
   // req.user
@@ -182,7 +182,22 @@ exports.postOrderProducts = (req, res, next) => {
   //   });
 };
 
-exports.getOrderedProdcuts = (req, res, next) => {
+exports.getOrderedProdcuts = async (req, res, next) => {
+  const orders = await User.fetchOrder(req.user._id);
+  const orderDetails = [];
+  for (item in orders) {
+    const orderItems = orders[item].items;
+    for (items in orderItems) {
+      const product = await ProductModel.fetchById(orderItems[items].productId);
+      orderItems[items] = { ...product, quantity: orderItems[items].quantity };
+    }
+    orderDetails.push({ orderId: orders[item]._id, orderItems });
+  }
+  res.render("shop/orders", {
+    docTitle: "Your Orders",
+    orderDetails: orderDetails,
+    path: "/orders",
+  });
   // req.user
   //   .getOrders({ include: ["products"] })
   //   .then((orders) => {
@@ -207,26 +222,30 @@ exports.getOrderedProdcuts = (req, res, next) => {
   // })
 };
 
-// exports.postDeleteOrder = (req, res, next) => {
-//   const orderId = req.params.orderId;
-//   req.user
-//     .getOrders({ include: ["products"] })
-//     .then((orders) => {
-//       return orders.find((order) => order.dataValues.id == orderId);
-//     })
-//     .then((order) => {
-//       order.products.map((product) => {
-//         order.removeProduct(product, { where: { id: product.id } });
-//       });
-//       Order.destroy({ where: { id: order.id } });
-//     })
-//     .then(() => {
-//       res.redirect("/orders");
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// };
+exports.postDeleteOrder = (req, res, next) => {
+  const orderId = req.params.orderId;
+  req.user
+    .removeOrder(orderId)
+    .then((result) => res.redirect("/orders"))
+    .catch((err) => console.log(err));
+  // req.user
+  //   .getOrders({ include: ["products"] })
+  //   .then((orders) => {
+  //     return orders.find((order) => order.dataValues.id == orderId);
+  //   })
+  //   .then((order) => {
+  //     order.products.map((product) => {
+  //       order.removeProduct(product, { where: { id: product.id } });
+  //     });
+  //     Order.destroy({ where: { id: order.id } });
+  //   })
+  //   .then(() => {
+  //     res.redirect("/orders");
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
+};
 
 // exports.getCheckoutProdcuts = (req, res, next) => {
 //   res.render("shop/checkout", {
