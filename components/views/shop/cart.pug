@@ -23,11 +23,11 @@ block content
                                     div.prd__img 
                                         img.img__dis(src=product.imgUrl, alt=product.title) 
                                     p #{product.title}
-                                    form.delete__action(action="/delete-product/"+product.id, method="POST")  
+                                    form.delete__action(action="/delete-product/"+product._id, method="POST")  
                                         button.btn Remove
                             th.prd__col #{product.price}
-                            th.prd__col #{product.cartItem.quantity}
-                            th.prd__col #{product.cartItem.quantity * product.price}
+                            th.prd__col #{product.quantity}
+                            th.prd__col #{product.quantity * product.price}
                             //- each prd in cartPrds 
                             //-     if prd.id === product.id
                             //-         th.prd__col #{prd.qty}
@@ -43,7 +43,7 @@ block content
                 div.sec3
                     - let totalPrice = 0
                     each prd in cartProducts
-                        - totalPrice = totalPrice + (prd.cartItem.quantity * prd.price)
+                        - totalPrice = totalPrice + (prd.quantity * prd.price)
                     p Rs. #{totalPrice}
                     p.free FREE
                 div.sec4
