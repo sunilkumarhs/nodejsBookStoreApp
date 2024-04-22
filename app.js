@@ -5,7 +5,8 @@ const shopRoutes = require("./routes/shop");
 const path = require("path");
 const errorController = require("./components/controllers/error");
 const User = require("./components/models/user");
-const mongoConnect = require("./utils/database").mongoConnect;
+// const mongoConnect = require("./utils/database").mongoConnect;
+const mongoose = require("mongoose");
 
 const app = express();
 
@@ -13,15 +14,17 @@ app.set("view engine", "pug");
 app.set("views", "components/views");
 
 app.use((req, res, next) => {
-  User.findUserById("6623ab0c0fd516852ad02569")
+  User.findById("6626358094e66f9755353558")
     .then((user) => {
-      req.user = new User(
-        user.userName,
-        user.password,
-        user.email,
-        user.cart,
-        user._id
-      );
+      req.user = user;
+      // req.user = new User(
+      //   user.userName,
+      //   user.password,
+      //   user.email,
+      //   user.cart,
+      //   user._id
+      // );
+      // console.log(req.user);
       next();
     })
     .catch((err) => console.log(err));
@@ -34,6 +37,22 @@ app.use(shopRoutes);
 app.use("/admin", adminRoutes);
 app.use(errorController.getErrorPage);
 
-mongoConnect(() => {
+mongoose.connect("mongodb+srv://puppet1718:Puppet010420@cluster010420.tdgtki9.mongodb.net/mshop?retryWrites=true&w=majority&appName=Cluster010420").then(result => {
+  User.findOne().then((user) => {
+    if(!user) {
+      const user = new User({
+        name:"sunil",
+        email:"pupet1718@gmail.com",
+        cart:{
+          items:[]
+        }
+      })
+      user.save();
+    }
+  })
   app.listen(3000);
-});
+}).catch(err => console.log(err));
+
+// mongoConnect(() => {
+//   app.listen(3000);
+// });

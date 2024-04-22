@@ -1,4 +1,5 @@
 const ProductModel = require("../models/product");
+const mongoDb = require("mongodb");
 const User = require("../models/user");
 // const CartModel = require("../models/cart");
 // const Product = require("../models/product");
@@ -6,7 +7,7 @@ const User = require("../models/user");
 // const Order = require("../models/orders");
 
 exports.getIndex = (req, res, next) => {
-  ProductModel.fetchAll()
+  ProductModel.find()
     .then((products) =>
       res.render("shop/index", {
         prds: products,
@@ -18,7 +19,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getDisplayProducts = (req, res, next) => {
-  ProductModel.fetchAll()
+  ProductModel.find()
     .then((products) =>
       res.render("shop/product-list", {
         prds: products,
@@ -39,7 +40,7 @@ exports.getProductDetail = (req, res, next) => {
   //     })
   //   )
   //   .catch((err) => console.log(err));
-  ProductModel.fetchById(prdId)
+  ProductModel.findById(prdId)
     .then((product) =>
       res.render("shop/product-detail", {
         product: product,
@@ -84,12 +85,12 @@ exports.getCartProdcuts = async (req, res, next) => {
 
 exports.postCartProduct = (req, res, next) => {
   const prdId = req.body.productId;
-  ProductModel.fetchById(prdId)
-    .then((product) => {
-      return req.user.addToCart(product);
-    })
-    .then((result) => res.redirect("/cart"))
-    .catch((err) => console.log(err));
+  // ProductModel.fetchById(prdId)
+  //   .then((product) => {
+  //     return req.user.addToCart(product);
+  //   })
+  //   .then((result) => res.redirect("/cart"))
+  //   .catch((err) => console.log(err));
   // let fetchedCart;
   // let newQuantity = 1;
   // req.user
@@ -149,9 +150,16 @@ exports.postDeleteProduct = (req, res, next) => {
   // res.redirect("/cart");
 };
 
-exports.postOrderProducts = (req, res, next) => {
+exports.postOrderProducts = async (req, res, next) => {
+  const cart = await User.fetchCart(req.user._id);
+  const cartItems = [];
+  for (item in cart) {
+    const product = await ProductModel.fetchById(cart[item].productId);
+    cartItems.push({ ...product, quantity: cart[item].quantity });
+  }
+  console.log(cartItems);
   req.user
-    .order()
+    .order(cartItems)
     .then((result) => res.redirect("/orders"))
     .catch((err) => console.log(err));
   // let fetchedCart;
@@ -184,18 +192,9 @@ exports.postOrderProducts = (req, res, next) => {
 
 exports.getOrderedProdcuts = async (req, res, next) => {
   const orders = await User.fetchOrder(req.user._id);
-  const orderDetails = [];
-  for (item in orders) {
-    const orderItems = orders[item].items;
-    for (items in orderItems) {
-      const product = await ProductModel.fetchById(orderItems[items].productId);
-      orderItems[items] = { ...product, quantity: orderItems[items].quantity };
-    }
-    orderDetails.push({ orderId: orders[item]._id, orderItems });
-  }
   res.render("shop/orders", {
     docTitle: "Your Orders",
-    orderDetails: orderDetails,
+    orderDetails: orders,
     path: "/orders",
   });
   // req.user

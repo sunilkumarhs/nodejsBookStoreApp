@@ -17,7 +17,7 @@ block content
                         th Action
                     each order in orderDetails
                         tr.table__rows
-                            th.prd__col #{order.orderId}
+                            th.prd__col #{order._id}
                             th
                                 table.cart__table
                                     tr.table__header 
@@ -25,7 +25,7 @@ block content
                                         th Price
                                         th Quantity
                                         th Subtotal
-                                    each product in order.orderItems
+                                    each product in order.items
                                         tr.table__rows 
                                             th 
                                                 div.prd__details 
@@ -36,7 +36,7 @@ block content
                                             th.prd__col #{product.quantity}
                                             th.prd__col #{product.quantity * product.price}
                             th
-                                form.delete__action(action="/delete-order/"+order.orderId, method="POST")  
+                                form.delete__action(action="/delete-order/"+order._id, method="POST")  
                                         button.btn Cancle
                         
             //- div.totalPrice__container 

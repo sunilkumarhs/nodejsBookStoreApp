@@ -1,4 +1,6 @@
 const ProductModel = require("../models/product");
+const mongoDb = require("mongodb");
+const User = require("../models/user");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/add-product", {
@@ -24,13 +26,19 @@ exports.getPostProduct = (req, res, next) => {
   //   })
   //   .then(() => res.redirect("/admin/products"))
   //   .catch((err) => console.log(err));
-  const product = new ProductModel(
-    productTitle,
-    price,
-    description,
-    imgUrl,
-    req.user._id
-  );
+  // const product = new ProductModel(
+  //   productTitle,
+  //   price,
+  //   description,
+  //   imgUrl,
+  //   req.user._id
+  // );
+  const product = new ProductModel({
+    title: productTitle,
+    price: price,
+    description: description,
+    imgUrl: imgUrl,
+  });
   product
     .save()
     .then(() => {
@@ -48,7 +56,7 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/admin/products");
   }
   const prdId = req.params.productId;
-  ProductModel.fetchById(prdId)
+  ProductModel.findById(prdId)
     .then((product) => {
       if (!product) {
         res.redirect("/");
@@ -89,9 +97,15 @@ exports.getPostEditProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
 
-  const product = new ProductModel(productTitle, price, description, imgUrl);
-  product
-    .update(prdId)
+  ProductModel.findById(prdId)
+    .then((product) => {
+      product.title = productTitle;
+      product.price = price;
+      product.description = description;
+      product.imgUrl = imgUrl;
+
+      return product.save();
+    })
     .then(() => {
       res.redirect("/admin/products");
     })
@@ -122,7 +136,7 @@ exports.getProducts = (req, res, next) => {
   //     })
   //   )
   //   .catch((err) => console.log(err));
-  ProductModel.fetchAll()
+  ProductModel.find()
     .then((products) =>
       res.render("admin/products", {
         prds: products,
@@ -135,9 +149,28 @@ exports.getProducts = (req, res, next) => {
 
 exports.getDeleteCompleted = (req, res, next) => {
   const prdId = req.params.productId;
-  ProductModel.delete(prdId)
+  ProductModel.deleteOne({ _id: new mongoDb.ObjectId(prdId) })
     .then(() => res.redirect("/admin/products"))
     .catch((err) => console.log(err));
+  // User.fetchUsers()
+  //   .then((users) => {
+  //     for (item in users) {
+  //       const user = new User(
+  //         users[item].userName,
+  //         users[item].password,
+  //         users[item].email,
+  //         users[item].cart,
+  //         users[item]._id
+  //       );
+  //       user.removeCartItem(prdId);
+  //     }
+  //     return;
+  //   })
+  //   .then(() => {
+  //     return ProductModel.delete(prdId);
+  //   })
+  //   .then(() => res.redirect("/admin/products"))
+  //   .catch((err) => console.log(err));
   // ProductModel.destroy({ where: { id: prdId } })
   //   .then(() => res.redirect("/admin/products"))
   //   .catch((err) => console.log(err));
