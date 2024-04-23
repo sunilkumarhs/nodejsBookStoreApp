@@ -30,11 +30,11 @@ block content
                                             th 
                                                 div.prd__details 
                                                     div.prd__img 
-                                                        img.img__dis(src=product.imgUrl, alt=product.title) 
-                                                    p #{product.title}
-                                            th.prd__col #{product.price}
+                                                        img.img__dis(src=product.product.imgUrl, alt=product.product.title) 
+                                                    p #{product.product.title}
+                                            th.prd__col #{product.product.price}
                                             th.prd__col #{product.quantity}
-                                            th.prd__col #{product.quantity * product.price}
+                                            th.prd__col #{product.quantity * product.product.price}
                             th
                                 form.delete__action(action="/delete-order/"+order._id, method="POST")  
                                         button.btn Cancle

@@ -38,6 +38,7 @@ exports.getPostProduct = (req, res, next) => {
     price: price,
     description: description,
     imgUrl: imgUrl,
+    userId: req.user,
   });
   product
     .save()
@@ -150,6 +151,15 @@ exports.getProducts = (req, res, next) => {
 exports.getDeleteCompleted = (req, res, next) => {
   const prdId = req.params.productId;
   ProductModel.deleteOne({ _id: new mongoDb.ObjectId(prdId) })
+    .then(() => {
+      const cartProductItems = req.user.cart.items.filter((cp) => {
+        return cp.productId.toString() !== prdId;
+      });
+      return User.updateOne(
+        { _id: req.user._id },
+        { $set: { cart: { items: cartProductItems } } }
+      );
+    })
     .then(() => res.redirect("/admin/products"))
     .catch((err) => console.log(err));
   // User.fetchUsers()

@@ -24,7 +24,6 @@ app.use((req, res, next) => {
       //   user.cart,
       //   user._id
       // );
-      // console.log(req.user);
       next();
     })
     .catch((err) => console.log(err));

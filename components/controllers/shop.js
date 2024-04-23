@@ -4,7 +4,7 @@ const User = require("../models/user");
 // const CartModel = require("../models/cart");
 // const Product = require("../models/product");
 // const { where } = require("sequelize");
-// const Order = require("../models/orders");
+const Order = require("../models/orders");
 
 exports.getIndex = (req, res, next) => {
   ProductModel.find()
@@ -51,11 +51,11 @@ exports.getProductDetail = (req, res, next) => {
 };
 
 exports.getCartProdcuts = async (req, res, next) => {
-  const cart = await User.fetchCart(req.user._id);
+  const cart = req.user.cart.items;
   const cartItems = [];
   for (item in cart) {
-    const product = await ProductModel.fetchById(cart[item].productId);
-    cartItems.push({ ...product, quantity: cart[item].quantity });
+    const product = await ProductModel.findById(cart[item].productId);
+    cartItems.push({ product: product, quantity: cart[item].quantity });
   }
   res.render("shop/cart", {
     docTitle: "Your Cart",
@@ -85,6 +85,29 @@ exports.getCartProdcuts = async (req, res, next) => {
 
 exports.postCartProduct = (req, res, next) => {
   const prdId = req.body.productId;
+  // User.find({ _id: req.user._id }).then((user) => )
+  let newQuantity = 1;
+  let updatedCartItems = [...req.user.cart.items];
+  const cartProductIndex = req.user.cart.items.findIndex((cp) => {
+    return cp.productId.toString() === prdId;
+  });
+  if (cartProductIndex >= 0) {
+    newQuantity = req.user.cart.items[cartProductIndex].quantity += 1;
+    updatedCartItems[cartProductIndex].quantity = newQuantity;
+  } else {
+    updatedCartItems.push({
+      productId: prdId,
+      quantity: newQuantity,
+    });
+  }
+  User.updateOne(
+    { _id: req.user._id },
+    { $set: { cart: { items: updatedCartItems } } }
+  )
+    .then((result) => {
+      res.redirect("/cart");
+    })
+    .catch((err) => console.log(err));
   // ProductModel.fetchById(prdId)
   //   .then((product) => {
   //     return req.user.addToCart(product);
@@ -128,9 +151,20 @@ exports.postCartProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prdId = req.params.productId;
-  req.user
-    .removeCartItem(prdId)
-    .then((result) => res.redirect("/cart"))
+  // req.user
+  //   .removeCartItem(prdId)
+  //   .then((result) => res.redirect("/cart"))
+  //   .catch((err) => console.log(err));
+  const cartProductItems = req.user.cart.items.filter((cp) => {
+    return cp.productId.toString() !== prdId;
+  });
+  User.updateOne(
+    { _id: req.user._id },
+    { $set: { cart: { items: cartProductItems } } }
+  )
+    .then((result) => {
+      res.redirect("/cart");
+    })
     .catch((err) => console.log(err));
   // req.user
   //   .getCart()
@@ -151,15 +185,22 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrderProducts = async (req, res, next) => {
-  const cart = await User.fetchCart(req.user._id);
+  const cart = req.user.cart.items;
   const cartItems = [];
   for (item in cart) {
-    const product = await ProductModel.fetchById(cart[item].productId);
-    cartItems.push({ ...product, quantity: cart[item].quantity });
+    const product = await ProductModel.findById(cart[item].productId);
+    cartItems.push({ product: product, quantity: cart[item].quantity });
   }
-  console.log(cartItems);
-  req.user
-    .order(cartItems)
+  const order = new Order({ userId: req.user._id, items: cartItems });
+
+  order
+    .save()
+    .then(() => {
+      return User.updateOne(
+        { _id: req.user._id },
+        { $set: { cart: { items: [] } } }
+      );
+    })
     .then((result) => res.redirect("/orders"))
     .catch((err) => console.log(err));
   // let fetchedCart;
@@ -191,7 +232,7 @@ exports.postOrderProducts = async (req, res, next) => {
 };
 
 exports.getOrderedProdcuts = async (req, res, next) => {
-  const orders = await User.fetchOrder(req.user._id);
+  const orders = await Order.find({ userId: req.user._id });
   res.render("shop/orders", {
     docTitle: "Your Orders",
     orderDetails: orders,
@@ -223,8 +264,7 @@ exports.getOrderedProdcuts = async (req, res, next) => {
 
 exports.postDeleteOrder = (req, res, next) => {
   const orderId = req.params.orderId;
-  req.user
-    .removeOrder(orderId)
+  Order.deleteOne({ _id: new mongoDb.ObjectId(orderId) })
     .then((result) => res.redirect("/orders"))
     .catch((err) => console.log(err));
   // req.user
