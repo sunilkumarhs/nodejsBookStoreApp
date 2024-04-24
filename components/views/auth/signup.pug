@@ -5,17 +5,15 @@ block styles
 
 block content 
     main.main-section 
-            form.form-section(action="/auth/login", method="POST")
-                h1.form-title Login-Page 
+            form.form-section(action="/auth/signup", method="POST")
+                h1.form-title SignUp-Page 
                 div.form-controler 
                     label(for="userEmail") Email 
                     input(type="text",placeholder="Email", name="userEmail")
                 div.form-controler 
                     label(for="userPassword") Password 
                     input(type="text",placeholder="Password", name="userPassword")
-                button.form-button(type="submit") SignIn
-            div.signup__link
-                h3.signup__content New User:
-                div.signup_div
-                    a(href="/auth/signup") 
-                        h3.signup__pageLink SIGNUP  
+                div.form-controler 
+                    label(for="userCPassword") Confirm Password 
+                    input(type="text",placeholder="Password", name="userCPassword")
+                button.form-button(type="submit") SignUP

@@ -10,15 +10,16 @@ const User = require("./components/models/user");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const app = express();
 
 app.set("view engine", "pug");
 app.set("views", "components/views");
-const mongoDbUri =
-  "mongodb+srv://puppet1718:Puppet010420@cluster010420.tdgtki9.mongodb.net/mshop";
 const store = new MongoDbStore({
-  uri: mongoDbUri,
+  uri: process.env.NODE_APP_MONGODB_URI_KEY,
   collection: "sessions",
 });
 app.use(
@@ -55,22 +56,12 @@ app.use(shopRoutes);
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use(errorController.getErrorPage);
-
-mongoose.connect("mongodb+srv://puppet1718:Puppet010420@cluster010420.tdgtki9.mongodb.net/mshop?retryWrites=true&w=majority&appName=Cluster010420").then(result => {
-  User.findOne().then((user) => {
-    if(!user) {
-      const user = new User({
-        name:"sunil",
-        email:"pupet1718@gmail.com",
-        cart:{
-          items:[]
-        }
-      })
-      user.save();
-    }
+mongoose
+  .connect(process.env.NODE_APP_MONGODB_URI_KEY)
+  .then((result) => {
+    app.listen(3000);
   })
-  app.listen(3000);
-}).catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
 // mongoConnect(() => {
 //   app.listen(3000);
