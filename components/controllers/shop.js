@@ -13,6 +13,7 @@ exports.getIndex = (req, res, next) => {
         prds: products,
         docTitle: "Index Page",
         path: "/",
+        isAuthenticated: req.session.isLoggedIn,
       })
     )
     .catch((err) => console.log(err));
@@ -25,6 +26,7 @@ exports.getDisplayProducts = (req, res, next) => {
         prds: products,
         docTitle: "Book-List Page",
         path: "/products",
+        isAuthenticated: req.session.isLoggedIn,
       })
     )
     .catch((err) => console.log(err));
@@ -45,6 +47,7 @@ exports.getProductDetail = (req, res, next) => {
       res.render("shop/product-detail", {
         product: product,
         docTitle: "Book Details",
+        isAuthenticated: req.session.isLoggedIn,
       })
     )
     .catch((err) => console.log(err));
@@ -61,6 +64,7 @@ exports.getCartProdcuts = async (req, res, next) => {
     docTitle: "Your Cart",
     cartProducts: cartItems,
     path: "/cart",
+    isAuthenticated: req.session.isLoggedIn,
   });
 
   // ProductModel.getProducts((products) => {
@@ -100,6 +104,7 @@ exports.postCartProduct = (req, res, next) => {
       quantity: newQuantity,
     });
   }
+  // req.user.cart.items = updatedCartItems;
   User.updateOne(
     { _id: req.user._id },
     { $set: { cart: { items: updatedCartItems } } }
@@ -158,6 +163,7 @@ exports.postDeleteProduct = (req, res, next) => {
   const cartProductItems = req.user.cart.items.filter((cp) => {
     return cp.productId.toString() !== prdId;
   });
+
   User.updateOne(
     { _id: req.user._id },
     { $set: { cart: { items: cartProductItems } } }
@@ -191,7 +197,7 @@ exports.postOrderProducts = async (req, res, next) => {
     const product = await ProductModel.findById(cart[item].productId);
     cartItems.push({ product: product, quantity: cart[item].quantity });
   }
-  const order = new Order({ userId: req.user._id, items: cartItems });
+  const order = new Order({ userId: req.user._id, products: cartItems });
 
   order
     .save()
@@ -237,6 +243,7 @@ exports.getOrderedProdcuts = async (req, res, next) => {
     docTitle: "Your Orders",
     orderDetails: orders,
     path: "/orders",
+    isAuthenticated: req.session.isLoggedIn,
   });
   // req.user
   //   .getOrders({ include: ["products"] })

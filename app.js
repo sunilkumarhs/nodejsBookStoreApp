@@ -2,19 +2,38 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 const path = require("path");
 const errorController = require("./components/controllers/error");
 const User = require("./components/models/user");
 // const mongoConnect = require("./utils/database").mongoConnect;
 const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoDbStore = require("connect-mongodb-session")(session);
 
 const app = express();
 
 app.set("view engine", "pug");
 app.set("views", "components/views");
-
+const mongoDbUri =
+  "mongodb+srv://puppet1718:Puppet010420@cluster010420.tdgtki9.mongodb.net/mshop";
+const store = new MongoDbStore({
+  uri: mongoDbUri,
+  collection: "sessions",
+});
+app.use(
+  session({
+    secret: "puppet@master is secrect",
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+  })
+);
 app.use((req, res, next) => {
-  User.findById("6626358094e66f9755353558")
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
       // req.user = new User(
@@ -33,6 +52,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(shopRoutes);
+app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use(errorController.getErrorPage);
 

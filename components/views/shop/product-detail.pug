@@ -18,7 +18,8 @@ block content
                     div.book__content 
                         h3.book__price ₹ #{product.price}
                         p.book__description #{product.description}
-                        div.book__actions 
-                            form(action="/cart", method="POST") 
-                                button.btn Add to Cart
-                                input(type="hidden", name="productId", value=product.id)
+                        if isAuthenticated
+                            div.book__actions 
+                                form(action="/cart", method="POST") 
+                                    button.btn Add to Cart
+                                    input(type="hidden", name="productId", value=product.id)

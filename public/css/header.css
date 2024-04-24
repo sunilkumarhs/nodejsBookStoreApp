@@ -17,12 +17,17 @@ body {
   align-items: center;
 }
 .main-header-item-list {
+  width: 100%;
   padding: 0;
   margin: 0;
   display: flex;
+  justify-content: space-between;
   font-size: large;
   font-style: italic;
   font-weight: bold;
+}
+.nav__section {
+  display: flex;
 }
 .main-header-item {
   list-style: none;
@@ -37,3 +42,4 @@ body {
 .main-header-item a.active {
   color: #ede83d;
 }
+

@@ -21,8 +21,9 @@ block content
                         div.card__actions 
                             a(href="/products/"+product._id)
                                 button.btn Details 
-                            form(action="/cart", method="POST") 
-                                button.btn Add to Cart
-                                input(type="hidden", name="productId", value=product._id)
+                            if isAuthenticated
+                                form(action="/cart", method="POST") 
+                                    button.btn Add to Cart
+                                    input(type="hidden", name="productId", value=product._id)
             else 
                 h1 No Books to Display!! 

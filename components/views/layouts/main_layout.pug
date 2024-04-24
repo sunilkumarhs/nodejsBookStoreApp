@@ -9,17 +9,27 @@ html(lang="en")
     body 
         header.main-header 
             nav.main-header__nav
-                ul.main-header-item-list 
-                    li.main-header-item 
-                        a(href="/", class=(path === "/" ? "active" : "")) Shop
-                    li.main-header-item 
-                        a(href="/products", class=(path === "/products" ? "active" : "")) Products 
-                    li.main-header-item 
-                        a(href="/cart", class=(path === "/cart" ? "active" : "")) Cart
-                    li.main-header-item 
-                        a(href="/orders", class=(path === "/orders" ? "active" : "")) Orders
-                    li.main-header-item 
-                        a(href="/admin/add-product", class=(path === "/admin/add-product" ? "active" : "")) Add-Product
-                    li.main-header-item 
-                        a(href="/admin/products", class=(path === "/admin/products" ? "active" : "")) Admin-Products
+                ul.main-header-item-list
+                    div.nav__section 
+                        li.main-header-item 
+                            a(href="/", class=(path === "/" ? "active" : "")) Shop
+                        li.main-header-item 
+                            a(href="/products", class=(path === "/products" ? "active" : "")) Products 
+                        if isAuthenticated
+                            li.main-header-item 
+                                a(href="/cart", class=(path === "/cart" ? "active" : "")) Cart
+                            li.main-header-item 
+                                a(href="/orders", class=(path === "/orders" ? "active" : "")) Orders
+                            li.main-header-item 
+                                a(href="/admin/add-product", class=(path === "/admin/add-product" ? "active" : "")) Add-Product
+                            li.main-header-item 
+                                a(href="/admin/products", class=(path === "/admin/products" ? "active" : "")) Admin-Products
+                    div.login__section
+                        if isAuthenticated
+                            li.main-header-item 
+                                form(action="/auth/logout", method="POST")
+                                    button(type="submit") SignOut
+                        else 
+                            li.main-header-item 
+                                a(href="/auth/login", class=(path === "/auth/login" ? "active" : "")) SignIn
         block content 
