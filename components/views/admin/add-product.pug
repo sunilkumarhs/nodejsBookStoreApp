@@ -20,4 +20,5 @@ block content
                 div.form-controler 
                     label(for="description") Book-Description 
                     textarea(name="description", rows="5") #{editProduct ? product.description : ""} 
+                input(type="hidden", name="_csrf", value=csrfToken)
                 button.form-button(type="submit") #{buttonWord} 

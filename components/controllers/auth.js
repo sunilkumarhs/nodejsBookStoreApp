@@ -9,6 +9,7 @@ exports.getLoginPage = (req, res, next) => {
     docTitle: "Login Page",
     path: "/login",
     isAuthenticated: req.session.isLoggedIn,
+    errorMessage: req.flash("SigninError"),
   });
 };
 
@@ -18,6 +19,7 @@ exports.postLoginData = (req, res, next) => {
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
+        req.flash("SigninError", "Invalid Email !!");
         return res.redirect("/auth/login");
       }
       bcrypt
@@ -33,6 +35,7 @@ exports.postLoginData = (req, res, next) => {
               res.redirect("/");
             });
           }
+          req.flash("SigninError", "Invalid Password!!");
           return res.redirect("/auth/login");
         })
         .catch((err) => {
@@ -54,6 +57,7 @@ exports.getSignupPage = (req, res, next) => {
     docTitle: "SignUp Page",
     path: "/signup",
     isAuthenticated: req.session.isLoggedIn,
+    errorMessage: req.flash("SignupError"),
   });
 };
 
@@ -65,6 +69,7 @@ exports.postSignupData = (req, res, next) => {
   User.findOne({ email: email })
     .then((userDoc) => {
       if (userDoc) {
+        req.flash("SignupError", "Email already exists!!");
         return res.redirect("/auth/signup");
       }
       return bcrypt

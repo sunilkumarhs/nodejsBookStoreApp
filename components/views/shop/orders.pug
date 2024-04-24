@@ -36,8 +36,9 @@ block content
                                             th.prd__col #{product.quantity}
                                             th.prd__col #{product.quantity * product.product.price}
                             th
-                                form.delete__action(action="/delete-order/"+order._id, method="POST")  
-                                        button.btn Cancle
+                                form.delete__action(action="/delete-order/"+order._id, method="POST") 
+                                    input(type="hidden", name="_csrf", value=csrfToken)
+                                    button.btn Cancle
                         
             //- div.totalPrice__container 
             //-     div.sec1 

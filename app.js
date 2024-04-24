@@ -11,17 +11,22 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
 const dotenv = require("dotenv");
+const csrf = require("csurf");
+const flash = require("connect-flash");
 
 dotenv.config();
 
 const app = express();
-
-app.set("view engine", "pug");
-app.set("views", "components/views");
 const store = new MongoDbStore({
   uri: process.env.NODE_APP_MONGODB_URI_KEY,
   collection: "sessions",
 });
+const csrfProtection = csrf();
+
+app.set("view engine", "pug");
+app.set("views", "components/views");
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
     secret: "puppet@master is secrect",
@@ -30,6 +35,8 @@ app.use(
     store: store,
   })
 );
+app.use(csrfProtection);
+app.use(flash());
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -49,9 +56,11 @@ app.use((req, res, next) => {
     .catch((err) => console.log(err));
 });
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
-
+app.use((req, res, next) => {
+  // res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 app.use(shopRoutes);
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);

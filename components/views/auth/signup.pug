@@ -16,4 +16,6 @@ block content
                 div.form-controler 
                     label(for="userCPassword") Confirm Password 
                     input(type="text",placeholder="Password", name="userCPassword")
+                p.error__msg #{errorMessage}
+                input(type="hidden", name="_csrf", value=csrfToken)
                 button.form-button(type="submit") SignUP

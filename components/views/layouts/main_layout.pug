@@ -28,6 +28,7 @@ html(lang="en")
                         if isAuthenticated
                             li.main-header-item 
                                 form(action="/auth/logout", method="POST")
+                                    input(type="hidden", name="_csrf", value=csrfToken)
                                     button(type="submit") SignOut
                         else 
                             li.main-header-item 

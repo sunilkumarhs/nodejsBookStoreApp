@@ -40,7 +40,7 @@ body {
   }
   .form-controler label {
     font-size: large;
-    color: #ed1a32;
+    color: #1aedbc;
   }
   .form-controler input,textarea {
     border: 2px solid #e8cb38;
@@ -83,7 +83,7 @@ body {
     display: flex;
   }
   .signup__content {
-    color: #ed1a32;
+    color: #1aedb8;
   }
   .signup__pageLink {
     background: linear-gradient(to top, rgb(9, 167, 235), rgb(238, 10, 10));
@@ -99,4 +99,8 @@ body {
   .signup_div {
     padding-left: 0.5rem;
     padding-top: 0.9rem;
+  }
+  .error__msg {
+    font-size: large;
+    color: #ed1a1a;
   }

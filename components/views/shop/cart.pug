@@ -47,7 +47,8 @@ block content
                     p Rs. #{totalPrice}
                     p.free FREE
                 div.sec4
-                    form(action="/post-orders", method="POST")  
+                    form(action="/post-orders", method="POST")
+                        input(type="hidden", name="_csrf", value=csrfToken)  
                         button ORDER NOW!
         else 
             h1(style="text-align:center") Cart is Empty!! 

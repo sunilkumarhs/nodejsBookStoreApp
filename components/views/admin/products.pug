@@ -21,7 +21,8 @@ block content
                         div.card__actions
                             a(href="edit-product/"+product._id+"/?edit=true") 
                                 button.btn Edit
-                            form(action="/admin/delete-product/"+product._id, method="POST")  
+                            form(action="/admin/delete-product/"+product._id, method="POST")
+                                input(type="hidden", name="_csrf", value=csrfToken)  
                                 button.btn Delete
             else 
                 h1 No Books to Display!! 
