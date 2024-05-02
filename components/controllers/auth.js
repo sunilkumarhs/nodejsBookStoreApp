@@ -1,6 +1,18 @@
-const { XLOCK } = require("sequelize/lib/table-hints");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const nodeMailer = require("nodemailer");
+const sendGridTransport = require("nodemailer-sendgrid-transport");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+const transporter = nodeMailer.createTransport(
+  sendGridTransport({
+    auth: {
+      api_key: process.env.NODE_APP_SENDGRID_API,
+    },
+  })
+);
 
 exports.getLoginPage = (req, res, next) => {
   //   console.log(req.session.isLoggedIn);
@@ -82,7 +94,16 @@ exports.postSignupData = (req, res, next) => {
           });
           return user.save();
         })
-        .then((result) => res.redirect("/auth/login"));
+        .then((result) => {
+          res.redirect("/auth/login");
+          return transporter.sendMail({
+            to: email,
+            from: "puppetmaster010420@gmail.com",
+            subject: "Successfull signup!",
+            html: "<h1>You successfully signed-up!</h1>",
+          });
+        })
+        .catch((err) => console.log(err));
     })
     .catch((err) => console.log(err));
 };

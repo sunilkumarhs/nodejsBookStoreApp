@@ -12,10 +12,10 @@ block content
                     input(type="text",placeholder="Email", name="userEmail")
                 div.form-controler 
                     label(for="userPassword") Password 
-                    input(type="text",placeholder="Password", name="userPassword")
+                    input(type="password",placeholder="Password", name="userPassword")
                 div.form-controler 
                     label(for="userCPassword") Confirm Password 
-                    input(type="text",placeholder="Password", name="userCPassword")
+                    input(type="password",placeholder="Password", name="userCPassword")
                 p.error__msg #{errorMessage}
                 input(type="hidden", name="_csrf", value=csrfToken)
                 button.form-button(type="submit") SignUP
