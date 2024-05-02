@@ -3,6 +3,9 @@ const bcrypt = require("bcrypt");
 const nodeMailer = require("nodemailer");
 const sendGridTransport = require("nodemailer-sendgrid-transport");
 const dotenv = require("dotenv");
+const crypto = require("crypto");
+const user = require("../models/user");
+const mongoDb = require("mongodb");
 
 dotenv.config();
 
@@ -101,6 +104,104 @@ exports.postSignupData = (req, res, next) => {
             from: "puppetmaster010420@gmail.com",
             subject: "Successfull signup!",
             html: "<h1>You successfully signed-up!</h1>",
+          });
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.getResetPage = (req, res, next) => {
+  res.render("auth/reset", {
+    docTitle: "Reset Page",
+    path: "/reset",
+    isAuthenticated: req.session.isLoggedIn,
+    errorMessage: req.flash("ResetError"),
+  });
+};
+
+exports.postResetData = (req, res, next) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log(err);
+      return res.redirect("/auth/reset");
+    }
+    const token = buffer.toString("hex");
+    const email = req.body.userEmail;
+    User.findOne({ email: email })
+      .then((user) => {
+        if (!user) {
+          req.flash("ResetError", "Email does not exists!!");
+          return res.redirect("/auth/reset");
+        }
+        user.resetToken = token;
+        user.resetTokenExperiation = Date.now() + 3600000;
+        return user.save();
+      })
+      .then((result) => {
+        res.redirect("/");
+        transporter.sendMail({
+          to: email,
+          from: "puppetmaster010420@gmail.com",
+          subject: "Reset the Password!",
+          html: `
+          <p>You requested a password reset</p>
+          <p>Click here <a href="http://localhost:3000/auth/changePassword/${token}">Reset Link</a> to reset your password</p>
+          `,
+        });
+      })
+      .catch((err) => console.log(err));
+  });
+};
+
+exports.getChangePassword = (req, res, next) => {
+  const token = req.params.token;
+  user
+    .findOne({ resetToken: token, resetTokenExperiation: { $gt: Date.now() } })
+    .then((user) => {
+      res.render("auth/changePassword", {
+        docTitle: "Reset Page",
+        path: "/changePassword",
+        isAuthenticated: req.session.isLoggedIn,
+        errorMessage: req.flash("ChangePasswordError"),
+        userId: user._id.toString(),
+        resetToken: token,
+      });
+    });
+};
+
+exports.postChangePasswordData = (req, res, next) => {
+  const password = req.body.password;
+  const confPassword = req.body.confPassword;
+  const userId = req.body.userId;
+  const token = req.body.resetToken;
+
+  User.findOne({
+    resetToken: token,
+    resetTokenExperiation: { $gt: Date.now() },
+    _id: new mongoDb.ObjectId(userId),
+  })
+    .then((user) => {
+      if (!user) {
+        req.flash("ChangePasswordError", "user does not exists!!");
+        return res.redirect("/auth/changePassword");
+      }
+      const email = user.email;
+      return bcrypt
+        .hash(password, 12)
+        .then((hashedPassword) => {
+          user.password = hashedPassword;
+          user.resetToken = undefined;
+          user.resetTokenExperiation = undefined;
+          return user.save();
+        })
+        .then((result) => {
+          res.redirect("/auth/login");
+          return transporter.sendMail({
+            to: email,
+            from: "puppetmaster010420@gmail.com",
+            subject: "Successfully changed password",
+            html: "<h1>Your password changed successfully!</h1>",
           });
         })
         .catch((err) => console.log(err));

@@ -104,3 +104,7 @@ body {
     font-size: large;
     color: #ed1a1a;
   }
+  .action_sec {
+    display: flex;
+    justify-content: space-between;
+  }

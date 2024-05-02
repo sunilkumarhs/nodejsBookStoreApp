@@ -19,6 +19,8 @@ block content
                     input(type="number",placeholder="Book-Price", name="price", value=editProduct ? product.price : "", step=0.01)
                 div.form-controler 
                     label(for="description") Book-Description 
-                    textarea(name="description", rows="5") #{editProduct ? product.description : ""} 
+                    textarea(name="description", rows="5") #{editProduct ? product.description : ""}
+                if editProduct
+                    input(type="hidden", name="userId", value=product.userId) 
                 input(type="hidden", name="_csrf", value=csrfToken)
                 button.form-button(type="submit") #{buttonWord} 

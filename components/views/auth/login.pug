@@ -15,7 +15,10 @@ block content
                     input(type="password",placeholder="Password", name="userPassword")
                 p.error__msg #{errorMessage}
                 input(type="hidden", name="_csrf", value=csrfToken)
-                button.form-button(type="submit") SignIn
+                div.action_sec
+                    button.form-button(type="submit") SignIn
+                    a(href="/auth/reset") 
+                        h3.signup__pageLink Forgot_Password
             div.signup__link
                 h3.signup__content New User:
                 div.signup_div

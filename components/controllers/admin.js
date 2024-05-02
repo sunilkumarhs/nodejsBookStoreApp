@@ -99,7 +99,11 @@ exports.getPostEditProduct = (req, res, next) => {
   const imgUrl = req.body.imgUrl;
   const price = req.body.price;
   const description = req.body.description;
+  const userId = req.body.userId;
 
+  if (userId.toString() !== req.user._id.toString()) {
+    return res.redirect("/admin/products");
+  }
   ProductModel.findById(prdId)
     .then((product) => {
       product.title = productTitle;
@@ -139,7 +143,7 @@ exports.getProducts = (req, res, next) => {
   //     })
   //   )
   //   .catch((err) => console.log(err));
-  ProductModel.find()
+  ProductModel.find({ userId: req.user._id })
     .then((products) =>
       res.render("admin/products", {
         prds: products,
@@ -153,15 +157,29 @@ exports.getProducts = (req, res, next) => {
 
 exports.getDeleteCompleted = (req, res, next) => {
   const prdId = req.params.productId;
+  const userId = req.body.userId;
+  if (userId.toString() !== req.user._id.toString()) {
+    console.log("not");
+    return res.redirect("/admin/products");
+  }
   ProductModel.deleteOne({ _id: new mongoDb.ObjectId(prdId) })
     .then(() => {
-      const cartProductItems = req.user.cart.items.filter((cp) => {
-        return cp.productId.toString() !== prdId;
-      });
-      return User.updateOne(
-        { _id: req.user._id },
-        { $set: { cart: { items: cartProductItems } } }
-      );
+      User.find()
+        .then((users) => {
+          users.map((user) => {
+            const cartProductItems = user.cart.items.filter((cp) => {
+              return cp.productId.toString() !== prdId;
+            });
+            console.log(cartProductItems);
+            User.updateOne(
+              { _id: user._id },
+              { $set: { cart: { items: cartProductItems } } }
+            )
+              .then(() => console.log("updated"))
+              .catch((err) => console.log(err));
+          });
+        })
+        .catch((err) => console.log(err));
     })
     .then(() => res.redirect("/admin/products"))
     .catch((err) => console.log(err));
