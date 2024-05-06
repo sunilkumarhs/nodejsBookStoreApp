@@ -34,7 +34,7 @@ exports.getLoginPage = (req, res, next) => {
 };
 
 exports.postLoginData = (req, res, next) => {
-  const email = req.body.userEmail;
+  const email = req.body.userEmail.trim();
   const password = req.body.userPassword;
   User.findOne({ email: email })
     .then((user) => {
@@ -178,18 +178,19 @@ exports.postResetData = (req, res, next) => {
           });
         }
         user.resetToken = token;
-        user.resetTokenExperiation = Date.now() + 3600000;
+        user.resetTokenExperiation = Date.now() + 300000;
         return user.save();
       })
       .then((result) => {
         res.redirect("/");
-        transporter.sendMail({
+        return transporter.sendMail({
           to: email,
           from: "puppetmaster010420@gmail.com",
           subject: "Reset the Password!",
           html: `
           <p>You requested a password reset</p>
           <p>Click here <a href="http://localhost:3000/auth/changePassword/${token}">Reset Link</a> to reset your password</p>
+          <p>The link is valid for 5 minutes only!</p>
           `,
         });
       })
@@ -202,6 +203,9 @@ exports.getChangePassword = (req, res, next) => {
   user
     .findOne({ resetToken: token, resetTokenExperiation: { $gt: Date.now() } })
     .then((user) => {
+      if (!user) {
+        return res.redirect("/error");
+      }
       res.render("auth/changePassword", {
         docTitle: "Reset Page",
         path: "/changePassword",
@@ -209,15 +213,30 @@ exports.getChangePassword = (req, res, next) => {
         errorMessage: req.flash("ChangePasswordError"),
         userId: user._id.toString(),
         resetToken: token,
+        outPutData: { password: "", confPassword: "" },
+        validationErrors: [],
       });
     });
 };
 
 exports.postChangePasswordData = (req, res, next) => {
   const password = req.body.password;
-  const confPassword = req.body.confPassword;
   const userId = req.body.userId;
   const token = req.body.resetToken;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/changePassword", {
+      docTitle: "Reset Page",
+      path: "/changePassword",
+      isAuthenticated: req.session.isLoggedIn,
+      errorMessage: errors.array()[0].msg,
+      userId: userId,
+      resetToken: token,
+      outPutData: { password: password, confPassword: req.body.confPassword },
+      validationErrors: errors.array(),
+    });
+  }
 
   User.findOne({
     resetToken: token,

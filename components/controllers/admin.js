@@ -1,6 +1,7 @@
 const ProductModel = require("../models/product");
 const mongoDb = require("mongodb");
 const User = require("../models/user");
+const { validationResult } = require("express-validator");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/add-product", {
@@ -9,7 +10,10 @@ exports.getAddProduct = (req, res, next) => {
     buttonWord: "ADD BOOK",
     path: "/admin/add-product",
     editProduct: false,
+    errorMessage: req.flash("addProdcutError"),
     isAuthenticated: req.session.isLoggedIn,
+    outPutData: { prdTitle: "", prdImgUrl: "", prdPrice: "", prdDesc: "" },
+    validationErrors: [],
   });
 };
 
@@ -18,6 +22,7 @@ exports.getPostProduct = (req, res, next) => {
   const imgUrl = req.body.imgUrl;
   const price = req.body.price;
   const description = req.body.description;
+  const errors = validationResult(req);
   // req.user
   //   .createProduct({
   //     title: productTitle,
@@ -34,6 +39,24 @@ exports.getPostProduct = (req, res, next) => {
   //   imgUrl,
   //   req.user._id
   // );
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/add-product", {
+      docTitle: "Add-Products Page",
+      heading: "Add Details of Book",
+      buttonWord: "ADD BOOK",
+      path: "/admin/add-product",
+      editProduct: false,
+      errorMessage: errors.array()[0].msg,
+      isAuthenticated: req.session.isLoggedIn,
+      outPutData: {
+        prdTitle: productTitle,
+        prdImgUrl: imgUrl,
+        prdPrice: price,
+        prdDesc: description,
+      },
+      validationErrors: errors.array(),
+    });
+  }
   const product = new ProductModel({
     title: productTitle,
     price: price,
@@ -45,7 +68,7 @@ exports.getPostProduct = (req, res, next) => {
     .save()
     .then(() => {
       console.log("product creted");
-      res.redirect("/admin/products");
+      return res.redirect("/admin/products");
     })
     .catch((err) => {
       console.log(err);
@@ -68,9 +91,18 @@ exports.getEditProduct = (req, res, next) => {
         heading: "Edit Details of Book",
         buttonWord: "SAVE BOOK",
         path: "/admin/edit-product",
-        product: product,
+        outPutEData: {
+          prdId: product._id,
+          userId: product.userId,
+          prdTitle: product.title,
+          prdImgUrl: product.imgUrl,
+          prdPrice: product.price,
+          prdDesc: product.description,
+        },
+        errorMessage: req.flash("editProdcutError"),
         editProduct: editMode,
         isAuthenticated: req.session.isLoggedIn,
+        validationErrors: [],
       });
     })
     .catch((err) => console.log(err));
@@ -100,10 +132,29 @@ exports.getPostEditProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   const userId = req.body.userId;
+  const errors = validationResult(req);
 
-  if (userId.toString() !== req.user._id.toString()) {
-    return res.redirect("/admin/products");
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/add-product", {
+      docTitle: "Edit-Product Page",
+      heading: "Edit Details of Book",
+      buttonWord: "SAVE BOOK",
+      path: "/admin/edit-product",
+      outPutEData: {
+        prdId: prdId,
+        userId: userId,
+        prdTitle: productTitle,
+        prdImgUrl: imgUrl,
+        prdPrice: price,
+        prdDesc: description,
+      },
+      errorMessage: errors.array()[0].msg,
+      editProduct: true,
+      isAuthenticated: req.session.isLoggedIn,
+      validationErrors: errors.array(),
+    });
   }
+
   ProductModel.findById(prdId)
     .then((product) => {
       product.title = productTitle;

@@ -15,18 +15,48 @@ routes.post(
     check("userEmail")
       .isEmail()
       .withMessage("Please enter valid email!")
-      .custom((value, { req }) => {
-        return User.findOne({ email: value }).then((userDoc) => {
-          if (userDoc) {
-            return Promise.reject("Email already exists!!");
-          }
-          if (value === "test@test.com") {
-            throw new Error("This kind of email's are forbidden");
-          }
-        });
-      }),
+      .custom(async (value, { req }) => {
+        const userDoc = await User.findOne({ email: value });
+        if (userDoc) {
+          return Promise.reject("Email already exists!!");
+        }
+        if (value === "test@test.com") {
+          throw new Error("This kind of email's are forbidden");
+        }
+        return userDoc;
+      })
+      .normalizeEmail(),
     body(
       "userPassword",
+      "Please enter the password length of atleast 7 or grater with one or more special character and numbers"
+    )
+      .trim()
+      .isStrongPassword({
+        minLength: 7,
+        minUppercase: 1,
+        minLowercase: 2,
+        minSymbols: 1,
+        minNumbers: 2,
+      }),
+    body("userCPassword")
+      .trim()
+      .custom((value, { req }) => {
+        if (value !== req.body.userPassword) {
+          throw new Error("Passwords did't match!");
+        }
+        return true;
+      }),
+  ],
+  authController.postSignupData
+);
+routes.get("/reset", authController.getResetPage);
+routes.post("/reset", authController.postResetData);
+routes.get("/changePassword/:token", authController.getChangePassword);
+routes.post(
+  "/changePassword",
+  [
+    body(
+      "password",
       "Please enter the password length of atleast 7 or grater with one or more special character and numbers"
     ).isStrongPassword({
       minLength: 7,
@@ -35,17 +65,13 @@ routes.post(
       minSymbols: 1,
       minNumbers: 2,
     }),
-    body("userCPassword").custom((value, { req }) => {
-      if (value !== req.body.userPassword) {
+    body("confPassword").custom((value, { req }) => {
+      if (value !== req.body.password) {
         throw new Error("Passwords did't match!");
       }
       return true;
     }),
   ],
-  authController.postSignupData
+  authController.postChangePasswordData
 );
-routes.get("/reset", authController.getResetPage);
-routes.post("/reset", authController.postResetData);
-routes.get("/changePassword/:token", authController.getChangePassword);
-routes.post("/changePassword", authController.postChangePasswordData);
 module.exports = routes;

@@ -3,8 +3,8 @@ body {
   padding: 0;
   background-image: linear-gradient(
     to right,
-    rgb(237, 197, 34),
-    rgb(226, 79, 21)
+    rgb(34, 203, 237),
+    rgb(192, 226, 21)
   );
 }
 .main-section {
@@ -73,4 +73,14 @@ body {
   );
   color: white;
   cursor: pointer;
+}
+
+.form-controler .invalid {
+  border-color: #ed1a1a;
+}
+
+.error__msg {
+  font-size: large; 
+  color: #e31818;
+  font-weight: bold;
 }

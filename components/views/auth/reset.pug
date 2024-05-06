@@ -9,7 +9,7 @@ block content
                 h1.form-title Reset-Page 
                 div.form-controler 
                     label(for="userEmail") Email
-                    if(errorMessage) 
+                    if(errorMessage == "Email does not exists!!") 
                         input.invalid(type="text",placeholder="Email", name="userEmail", value=outPutData.email)
                     else 
                         input(type="text",placeholder="Email", name="userEmail", value=outPutData.email)

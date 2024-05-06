@@ -6,21 +6,34 @@ block styles
 block content 
     main.main-section 
             //- form.form-section(action="/admin/"+editProduct ? "edit-product/"+product.id : "add-product", method="POST") 
-            form.form-section(action=`${editProduct ? "/admin/edit-product/"+product._id : "/admin/add-product"}`, method="POST")
+            form.form-section(action=`${editProduct ? "/admin/edit-product/"+outPutEData.prdId : "/admin/add-product"}`, method="POST", novalidate)
                 h1.form-title #{heading} 
                 div.form-controler 
-                    label(for="productTitle") Title 
-                    input(type="text",placeholder="Book-Title", name="productTitle", value=editProduct ? product.title : "")
+                    label(for="productTitle") Title
+                    if(validationErrors.find(e => e.path === "productTitle")) 
+                        input.invalid(type="text",placeholder="Book-Title", name="productTitle", value=editProduct ? outPutEData.prdTitle : outPutData.prdTitle)
+                    else 
+                        input(type="text",placeholder="Book-Title", name="productTitle", value=editProduct ? outPutEData.prdTitle : outPutData.prdTitle)
                 div.form-controler 
                     label(for="imgUrl") ImageUrl 
-                    input(type="text",placeholder="Book-ImageUrl", name="imgUrl", value=editProduct ? product.imgUrl : "")
+                    if(validationErrors.find(e => e.path === "imgUrl")) 
+                        input.invalid(type="text",placeholder="Book-ImageUrl", name="imgUrl", value=editProduct ? outPutEData.prdImgUrl : outPutData.prdImgUrl)
+                    else 
+                        input(type="text",placeholder="Book-ImageUrl", name="imgUrl", value=editProduct ? outPutEData.prdImgUrl : outPutData.prdImgUrl)
                 div.form-controler 
                     label(for="price") Price
-                    input(type="number",placeholder="Book-Price", name="price", value=editProduct ? product.price : "", step=0.01)
+                    if(validationErrors.find(e => e.path === "price")) 
+                        input.invalid(type="number",placeholder="Book-Price", name="price", value=editProduct ? outPutEData.prdPrice : outPutData.prdPrice, step=0.01)
+                    else 
+                        input(type="number",placeholder="Book-Price", name="price", value=editProduct ? outPutEData.prdPrice : outPutData.prdPrice, step=0.01)
                 div.form-controler 
-                    label(for="description") Book-Description 
-                    textarea(name="description", rows="5") #{editProduct ? product.description : ""}
+                    label(for="description") Book-Description
+                    if(validationErrors.find(e => e.path === "description")) 
+                        textarea.invalid(name="description", rows="5") #{editProduct ? outPutEData.prdDesc : outPutData.prdDesc}
+                    else 
+                        textarea(name="description", rows="5") #{editProduct ? outPutEData.prdDesc : outPutData.prdDesc}
+                p.error__msg #{errorMessage}
                 if editProduct
-                    input(type="hidden", name="userId", value=product.userId) 
+                    input(type="hidden", name="userId", value=outPutEData.userId) 
                 input(type="hidden", name="_csrf", value=csrfToken)
                 button.form-button(type="submit") #{buttonWord} 
