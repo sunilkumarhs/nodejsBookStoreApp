@@ -108,3 +108,6 @@ body {
     display: flex;
     justify-content: space-between;
   }
+  .form-controler .invalid {
+    border-color: #ed1a1a;
+  }

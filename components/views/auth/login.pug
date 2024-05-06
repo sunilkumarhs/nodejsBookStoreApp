@@ -5,14 +5,20 @@ block styles
 
 block content 
     main.main-section 
-            form.form-section(action="/auth/login", method="POST")
+            form.form-section(action="/auth/login", method="POST", novalidate)
                 h1.form-title Login-Page 
                 div.form-controler 
                     label(for="userEmail") Email 
-                    input(type="text",placeholder="Email", name="userEmail")
+                    if(errorMessage == "Invalid Email !!")
+                        input.invalid(type="email",placeholder="Email", name="userEmail", value=outPutData.email)
+                    else 
+                        input(type="email",placeholder="Email", name="userEmail", value=outPutData.email)
                 div.form-controler 
                     label(for="userPassword") Password 
-                    input(type="password",placeholder="Password", name="userPassword")
+                    if(errorMessage == "Invalid Password !!")
+                        input.invalid(type="password",placeholder="Password", name="userPassword", value=outPutData.password)
+                    else 
+                        input(type="password",placeholder="Password", name="userPassword", value=outPutData.password)
                 p.error__msg #{errorMessage}
                 input(type="hidden", name="_csrf", value=csrfToken)
                 div.action_sec

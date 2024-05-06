@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const crypto = require("crypto");
 const user = require("../models/user");
 const mongoDb = require("mongodb");
+const { validationResult } = require("express-validator");
 
 dotenv.config();
 
@@ -25,6 +26,10 @@ exports.getLoginPage = (req, res, next) => {
     path: "/login",
     isAuthenticated: req.session.isLoggedIn,
     errorMessage: req.flash("SigninError"),
+    outPutData: {
+      email: "",
+      password: "",
+    },
   });
 };
 
@@ -35,7 +40,16 @@ exports.postLoginData = (req, res, next) => {
     .then((user) => {
       if (!user) {
         req.flash("SigninError", "Invalid Email !!");
-        return res.redirect("/auth/login");
+        return res.render("auth/login", {
+          docTitle: "Login Page",
+          path: "/login",
+          isAuthenticated: req.session.isLoggedIn,
+          errorMessage: req.flash("SigninError"),
+          outPutData: {
+            email: email,
+            password: password,
+          },
+        });
       }
       bcrypt
         .compare(password, user.password)
@@ -50,8 +64,17 @@ exports.postLoginData = (req, res, next) => {
               res.redirect("/");
             });
           }
-          req.flash("SigninError", "Invalid Password!!");
-          return res.redirect("/auth/login");
+          req.flash("SigninError", "Invalid Password !!");
+          return res.render("auth/login", {
+            docTitle: "Login Page",
+            path: "/login",
+            isAuthenticated: req.session.isLoggedIn,
+            errorMessage: req.flash("SigninError"),
+            outPutData: {
+              email: email,
+              password: password,
+            },
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -73,40 +96,53 @@ exports.getSignupPage = (req, res, next) => {
     path: "/signup",
     isAuthenticated: req.session.isLoggedIn,
     errorMessage: req.flash("SignupError"),
+    outPutData: {
+      email: "",
+      password: "",
+      confPassword: "",
+    },
+    validationErrors: [],
   });
 };
 
 exports.postSignupData = (req, res, next) => {
   const email = req.body.userEmail;
   const password = req.body.userPassword;
-  const confPassword = req.body.userCPassword;
+  const errors = validationResult(req);
 
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      if (userDoc) {
-        req.flash("SignupError", "Email already exists!!");
-        return res.redirect("/auth/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/auth/login");
-          return transporter.sendMail({
-            to: email,
-            from: "puppetmaster010420@gmail.com",
-            subject: "Successfull signup!",
-            html: "<h1>You successfully signed-up!</h1>",
-          });
-        })
-        .catch((err) => console.log(err));
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/signup", {
+      docTitle: "SignUp Page",
+      path: "/signup",
+      isAuthenticated: req.session.isLoggedIn,
+      errorMessage: errors.array()[0].msg,
+      outPutData: {
+        email: email,
+        password: password,
+        confPassword: req.body.userCPassword,
+      },
+      validationErrors: errors.array(),
+    });
+  }
+
+  return bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect("/auth/login");
+      return transporter.sendMail({
+        to: email,
+        from: "puppetmaster010420@gmail.com",
+        subject: "Successfull signup!",
+        html: "<h1>You successfully signed-up!</h1>",
+      });
     })
     .catch((err) => console.log(err));
 };
@@ -117,6 +153,7 @@ exports.getResetPage = (req, res, next) => {
     path: "/reset",
     isAuthenticated: req.session.isLoggedIn,
     errorMessage: req.flash("ResetError"),
+    outPutData: { email: "" },
   });
 };
 
@@ -132,7 +169,13 @@ exports.postResetData = (req, res, next) => {
       .then((user) => {
         if (!user) {
           req.flash("ResetError", "Email does not exists!!");
-          return res.redirect("/auth/reset");
+          return res.render("auth/reset", {
+            docTitle: "Reset Page",
+            path: "/reset",
+            isAuthenticated: req.session.isLoggedIn,
+            errorMessage: req.flash("ResetError"),
+            outPutData: { email: email },
+          });
         }
         user.resetToken = token;
         user.resetTokenExperiation = Date.now() + 3600000;

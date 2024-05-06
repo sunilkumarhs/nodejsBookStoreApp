@@ -8,8 +8,11 @@ block content
             form.form-section(action="/auth/reset", method="POST")
                 h1.form-title Reset-Page 
                 div.form-controler 
-                    label(for="userEmail") Email 
-                    input(type="text",placeholder="Email", name="userEmail")
+                    label(for="userEmail") Email
+                    if(errorMessage) 
+                        input.invalid(type="text",placeholder="Email", name="userEmail", value=outPutData.email)
+                    else 
+                        input(type="text",placeholder="Email", name="userEmail", value=outPutData.email)
                 p.error__msg #{errorMessage}
                 input(type="hidden", name="_csrf", value=csrfToken)
                 button.form-button(type="submit") Reset Password

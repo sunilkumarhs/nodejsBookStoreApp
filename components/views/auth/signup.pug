@@ -5,17 +5,26 @@ block styles
 
 block content 
     main.main-section 
-            form.form-section(action="/auth/signup", method="POST")
+            form.form-section(action="/auth/signup", method="POST", novalidate)
                 h1.form-title SignUp-Page 
                 div.form-controler 
                     label(for="userEmail") Email 
-                    input(type="text",placeholder="Email", name="userEmail")
+                    if(validationErrors.find(e => e.path === "userEmail"))
+                        input.invalid(type="email",placeholder="Email", name="userEmail", value=outPutData.email)
+                    else 
+                        input(type="email",placeholder="Email", name="userEmail", value=outPutData.email)
                 div.form-controler 
                     label(for="userPassword") Password 
-                    input(type="password",placeholder="Password", name="userPassword")
+                    if(validationErrors.find(e => e.path === "userPassword"))
+                        input.invalid(type="password",placeholder="Password", name="userPassword", value=outPutData.password)
+                    else 
+                        input(type="password",placeholder="Password", name="userPassword", value=outPutData.password)
                 div.form-controler 
-                    label(for="userCPassword") Confirm Password 
-                    input(type="password",placeholder="Password", name="userCPassword")
+                    label(for="userCPassword") Confirm Password
+                    if(validationErrors.find(e => e.path === "userCPassword"))
+                        input.invalid(type="password",placeholder="Password", name="userCPassword", value=outPutData.confPassword)
+                    else 
+                        input(type="password",placeholder="Password", name="userCPassword", value=outPutData.confPassword)
                 p.error__msg #{errorMessage}
                 input(type="hidden", name="_csrf", value=csrfToken)
                 button.form-button(type="submit") SignUP
