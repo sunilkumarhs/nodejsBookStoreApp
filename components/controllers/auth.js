@@ -78,7 +78,7 @@ exports.postLoginData = (req, res, next) => {
         })
         .catch((err) => {
           console.log(err);
-          res.redirect("/auth/login");
+          res.redirect("/500");
         });
     })
     .catch((err) => console.log(err));
@@ -144,7 +144,7 @@ exports.postSignupData = (req, res, next) => {
         html: "<h1>You successfully signed-up!</h1>",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => res.redirect("/500"));
 };
 
 exports.getResetPage = (req, res, next) => {
@@ -194,7 +194,7 @@ exports.postResetData = (req, res, next) => {
           `,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => res.redirect("/500"));
   });
 };
 
@@ -266,7 +266,11 @@ exports.postChangePasswordData = (req, res, next) => {
             html: "<h1>Your password changed successfully!</h1>",
           });
         })
-        .catch((err) => console.log(err));
+        .catch((err) => res.redirect("/500"));
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };

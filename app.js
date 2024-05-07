@@ -13,6 +13,7 @@ const MongoDbStore = require("connect-mongodb-session")(session);
 const dotenv = require("dotenv");
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const { error } = require("console");
 
 dotenv.config();
 
@@ -43,6 +44,9 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.user._id)
     .then((user) => {
+      if (!user) {
+        return next();
+      }
       req.user = user;
       // req.user = new User(
       //   user.userName,
@@ -53,7 +57,9 @@ app.use((req, res, next) => {
       // );
       next();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      next(new Error(err));
+    });
 });
 
 app.use((req, res, next) => {
@@ -64,7 +70,15 @@ app.use((req, res, next) => {
 app.use(shopRoutes);
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
+app.use("/500", errorController.getErrorPage500);
 app.use(errorController.getErrorPage);
+app.use((error, req, res, next) => {
+  res.status(500).render("500", {
+    docTitle: "Server Error",
+    path: "/500",
+    isAuthenticated: req.session.isLoggedIn,
+  });
+});
 mongoose
   .connect(process.env.NODE_APP_MONGODB_URI_KEY)
   .then((result) => {

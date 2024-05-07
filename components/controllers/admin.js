@@ -71,7 +71,7 @@ exports.getPostProduct = (req, res, next) => {
       return res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
+      res.redirect("/500");
     });
 };
 
@@ -157,6 +157,10 @@ exports.getPostEditProduct = (req, res, next) => {
 
   ProductModel.findById(prdId)
     .then((product) => {
+      // throw new Error("dummy");
+      if (!product) {
+        res.redirect("/");
+      }
       product.title = productTitle;
       product.price = price;
       product.description = description;
@@ -168,7 +172,9 @@ exports.getPostEditProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
   // ProductModel.update(
   //   {
@@ -203,7 +209,11 @@ exports.getProducts = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
       })
     )
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getDeleteCompleted = (req, res, next) => {
@@ -227,13 +237,25 @@ exports.getDeleteCompleted = (req, res, next) => {
               { $set: { cart: { items: cartProductItems } } }
             )
               .then(() => console.log("updated"))
-              .catch((err) => console.log(err));
+              .catch((err) => {
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);
+              });
           });
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          return next(error);
+        });
     })
     .then(() => res.redirect("/admin/products"))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   // User.fetchUsers()
   //   .then((users) => {
   //     for (item in users) {

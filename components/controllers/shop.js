@@ -16,7 +16,11 @@ exports.getIndex = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
       })
     )
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getDisplayProducts = (req, res, next) => {
@@ -29,7 +33,11 @@ exports.getDisplayProducts = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
       })
     )
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getProductDetail = (req, res, next) => {
@@ -50,7 +58,11 @@ exports.getProductDetail = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
       })
     )
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getCartProdcuts = async (req, res, next) => {
@@ -112,7 +124,11 @@ exports.postCartProduct = (req, res, next) => {
     .then((result) => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   // ProductModel.fetchById(prdId)
   //   .then((product) => {
   //     return req.user.addToCart(product);
@@ -171,7 +187,11 @@ exports.postDeleteProduct = (req, res, next) => {
     .then((result) => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   // req.user
   //   .getCart()
   //   .then((cart) => {
@@ -208,7 +228,11 @@ exports.postOrderProducts = async (req, res, next) => {
       );
     })
     .then((result) => res.redirect("/orders"))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   // let fetchedCart;
   // req.user
   //   .getCart()
@@ -273,7 +297,11 @@ exports.postDeleteOrder = (req, res, next) => {
   const orderId = req.params.orderId;
   Order.deleteOne({ _id: new mongoDb.ObjectId(orderId) })
     .then((result) => res.redirect("/orders"))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   // req.user
   //   .getOrders({ include: ["products"] })
   //   .then((orders) => {
