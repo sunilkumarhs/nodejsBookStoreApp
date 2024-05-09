@@ -13,7 +13,7 @@ const MongoDbStore = require("connect-mongodb-session")(session);
 const dotenv = require("dotenv");
 const csrf = require("csurf");
 const flash = require("connect-flash");
-const { error } = require("console");
+const multur = require("multer");
 
 dotenv.config();
 
@@ -23,10 +23,33 @@ const store = new MongoDbStore({
   collection: "sessions",
 });
 const csrfProtection = csrf();
+const fileStorage = multur.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 app.set("view engine", "pug");
 app.set("views", "components/views");
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(
+  multur({ storage: fileStorage, fileFilter: fileFilter }).single("imgUrl")
+);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({

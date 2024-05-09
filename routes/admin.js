@@ -12,25 +12,6 @@ routes.post(
     body("productTitle")
       .isLength({ min: 1 })
       .withMessage("Please enter the Title of Book!"),
-    check("imgUrl")
-      .isURL({
-        protocols: ["http", "https", "ftp"],
-        require_tld: true,
-        require_protocol: true,
-        require_host: true,
-        require_port: false,
-        require_valid_protocol: true,
-        allow_underscores: false,
-        host_whitelist: false,
-        host_blacklist: false,
-        allow_trailing_dot: false,
-        allow_protocol_relative_urls: false,
-        allow_fragments: true,
-        allow_query_components: true,
-        disallow_auth: false,
-        validate_length: true,
-      })
-      .withMessage("Please enter the valid url of image!"),
     body("price").isNumeric().withMessage("Enter the proper price!"),
     body("description")
       .isLength({ min: 30 })
@@ -54,25 +35,6 @@ routes.post(
     body("productTitle")
       .isLength({ min: 1 })
       .withMessage("Please enter the Title of Book!"),
-    check("imgUrl")
-      .isURL({
-        protocols: ["http", "https", "ftp"],
-        require_tld: true,
-        require_protocol: true,
-        require_host: true,
-        require_port: false,
-        require_valid_protocol: true,
-        allow_underscores: false,
-        host_whitelist: false,
-        host_blacklist: false,
-        allow_trailing_dot: false,
-        allow_protocol_relative_urls: false,
-        allow_fragments: true,
-        allow_query_components: true,
-        disallow_auth: false,
-        validate_length: true,
-      })
-      .withMessage("Please enter the valid url of image!"),
     body("price").isNumeric().withMessage("Enter the proper price!"),
     body("description")
       .isLength({ min: 30 })
@@ -90,3 +52,24 @@ routes.post(
 );
 
 module.exports = routes;
+
+
+// check("imgUrl")
+    //   .isURL({
+    //     protocols: ["http", "https", "ftp"],
+    //     require_tld: true,
+    //     require_protocol: true,
+    //     require_host: true,
+    //     require_port: false,
+    //     require_valid_protocol: true,
+    //     allow_underscores: false,
+    //     host_whitelist: false,
+    //     host_blacklist: false,
+    //     allow_trailing_dot: false,
+    //     allow_protocol_relative_urls: false,
+    //     allow_fragments: true,
+    //     allow_query_components: true,
+    //     disallow_auth: false,
+    //     validate_length: true,
+    //   })
+    //   .withMessage("Please enter the valid url of image!"),

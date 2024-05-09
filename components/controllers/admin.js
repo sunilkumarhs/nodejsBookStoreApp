@@ -19,7 +19,8 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.getPostProduct = (req, res, next) => {
   const productTitle = req.body.productTitle;
-  const imgUrl = req.body.imgUrl;
+  const imgUrl = req.file;
+  console.log(imgUrl);
   const price = req.body.price;
   const description = req.body.description;
   const errors = validationResult(req);
@@ -71,7 +72,9 @@ exports.getPostProduct = (req, res, next) => {
       return res.redirect("/admin/products");
     })
     .catch((err) => {
-      res.redirect("/500");
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -105,7 +108,11 @@ exports.getEditProduct = (req, res, next) => {
         validationErrors: [],
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   // req.user
   //   .getProducts({ where: { id: prdId } })
   //   .then((products) => {

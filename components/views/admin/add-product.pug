@@ -6,7 +6,7 @@ block styles
 block content 
     main.main-section 
             //- form.form-section(action="/admin/"+editProduct ? "edit-product/"+product.id : "add-product", method="POST") 
-            form.form-section(action=`${editProduct ? "/admin/edit-product/"+outPutEData.prdId : "/admin/add-product"}`, method="POST", novalidate)
+            form.form-section(action=`${editProduct ? "/admin/edit-product/"+outPutEData.prdId : "/admin/add-product"}`, method="POST", encType="multipart/form-data",novalidate)
                 h1.form-title #{heading} 
                 div.form-controler 
                     label(for="productTitle") Title
@@ -14,12 +14,15 @@ block content
                         input.invalid(type="text",placeholder="Book-Title", name="productTitle", value=editProduct ? outPutEData.prdTitle : outPutData.prdTitle)
                     else 
                         input(type="text",placeholder="Book-Title", name="productTitle", value=editProduct ? outPutEData.prdTitle : outPutData.prdTitle)
+                //- div.form-controler 
+                //-     label(for="imgUrl") ImageUrl 
+                //-     if(validationErrors.find(e => e.path === "imgUrl")) 
+                //-         input.invalid(type="text",placeholder="Book-ImageUrl", name="imgUrl", value=editProduct ? outPutEData.prdImgUrl : outPutData.prdImgUrl)
+                //-     else 
+                //-         input(type="text",placeholder="Book-ImageUrl", name="imgUrl", value=editProduct ? outPutEData.prdImgUrl : outPutData.prdImgUrl)
                 div.form-controler 
                     label(for="imgUrl") ImageUrl 
-                    if(validationErrors.find(e => e.path === "imgUrl")) 
-                        input.invalid(type="text",placeholder="Book-ImageUrl", name="imgUrl", value=editProduct ? outPutEData.prdImgUrl : outPutData.prdImgUrl)
-                    else 
-                        input(type="text",placeholder="Book-ImageUrl", name="imgUrl", value=editProduct ? outPutEData.prdImgUrl : outPutData.prdImgUrl)
+                    input(type="file", name="imgUrl")
                 div.form-controler 
                     label(for="price") Price
                     if(validationErrors.find(e => e.path === "price")) 
