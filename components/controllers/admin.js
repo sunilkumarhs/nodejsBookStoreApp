@@ -2,6 +2,7 @@ const ProductModel = require("../models/product");
 const mongoDb = require("mongodb");
 const User = require("../models/user");
 const { validationResult } = require("express-validator");
+const fileHandler = require("../../utils/file");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/add-product", {
@@ -166,7 +167,6 @@ exports.getPostEditProduct = (req, res, next) => {
         prdId: prdId,
         userId: userId,
         prdTitle: productTitle,
-        prdImgUrl: imgUrl,
         prdPrice: price,
         prdDesc: description,
       },
@@ -187,6 +187,7 @@ exports.getPostEditProduct = (req, res, next) => {
       product.price = price;
       product.description = description;
       if (imageUrl) {
+        fileHandler.deleteFile(product.imgUrl);
         product.imgUrl = "/" + imageUrl.path;
       }
       return product.save();
@@ -246,7 +247,14 @@ exports.getDeleteCompleted = (req, res, next) => {
     console.log("not");
     return res.redirect("/admin/products");
   }
-  ProductModel.deleteOne({ _id: new mongoDb.ObjectId(prdId) })
+  ProductModel.findById(prdId)
+    .then((product) => {
+      if (!product) {
+        return next(new Error("No Product found!!"));
+      }
+      fileHandler.deleteFile(product.imgUrl);
+      return ProductModel.deleteOne({ _id: new mongoDb.ObjectId(prdId) });
+    })
     .then(() => {
       User.find()
         .then((users) => {
