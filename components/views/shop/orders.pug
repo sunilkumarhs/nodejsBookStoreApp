@@ -39,6 +39,9 @@ block content
                                 form.delete__action(action="/delete-order/"+order._id, method="POST") 
                                     input(type="hidden", name="_csrf", value=csrfToken)
                                     button.btn Cancle
+                                form.delete__action(action="/invoice-order/"+order._id, method="POST") 
+                                    input(type="hidden", name="_csrf", value=csrfToken)
+                                    button.btn Get Invoice
                         
             //- div.totalPrice__container 
             //-     div.sec1 

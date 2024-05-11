@@ -28,7 +28,10 @@ const fileStorage = multur.diskStorage({
     cb(null, "images");
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    cb(
+      null,
+      `${new Date().toISOString().split(":").join("")}-${file.originalname}`
+    );
   },
 });
 
@@ -51,6 +54,7 @@ app.use(
   multur({ storage: fileStorage, fileFilter: fileFilter }).single("imgUrl")
 );
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(
   session({
     secret: "puppet@master is secrect",

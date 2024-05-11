@@ -5,6 +5,8 @@ const User = require("../models/user");
 // const Product = require("../models/product");
 // const { where } = require("sequelize");
 const Order = require("../models/orders");
+const fs = require("fs");
+const path = require("path");
 
 exports.getIndex = (req, res, next) => {
   ProductModel.find()
@@ -319,6 +321,33 @@ exports.postDeleteOrder = (req, res, next) => {
   //   .catch((err) => {
   //     console.log(err);
   //   });
+};
+
+exports.postGetInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) {
+        return next(new Error("No-Order Found!!"));
+      }
+      if (order.userId.toString() !== req.user._id.toString()) {
+        return next(new Error("UnAuthorized Access!!"));
+      }
+      const invoiceId = "invoice-" + orderId + ".pdf";
+      const invoicePath = path.join("data", "invoices", invoiceId);
+      fs.readFile(invoicePath, (err, data) => {
+        if (err) {
+          return next(err);
+        }
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          `inline; filename="` + invoiceId + `"`
+        );
+        res.send(data);
+      });
+    })
+    .catch((err) => next(err));
 };
 
 // exports.getCheckoutProdcuts = (req, res, next) => {

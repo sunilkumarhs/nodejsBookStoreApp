@@ -20,9 +20,25 @@ exports.getAddProduct = (req, res, next) => {
 exports.getPostProduct = (req, res, next) => {
   const productTitle = req.body.productTitle;
   const imgUrl = req.file;
-  console.log(imgUrl);
   const price = req.body.price;
   const description = req.body.description;
+  if (!imgUrl) {
+    return res.status(422).render("admin/add-product", {
+      docTitle: "Add-Products Page",
+      heading: "Add Details of Book",
+      buttonWord: "ADD BOOK",
+      path: "/admin/add-product",
+      editProduct: false,
+      errorMessage: "Attached file is not an image!!",
+      isAuthenticated: req.session.isLoggedIn,
+      outPutData: {
+        prdTitle: productTitle,
+        prdPrice: price,
+        prdDesc: description,
+      },
+      validationErrors: [],
+    });
+  }
   const errors = validationResult(req);
   // req.user
   //   .createProduct({
@@ -51,18 +67,18 @@ exports.getPostProduct = (req, res, next) => {
       isAuthenticated: req.session.isLoggedIn,
       outPutData: {
         prdTitle: productTitle,
-        prdImgUrl: imgUrl,
         prdPrice: price,
         prdDesc: description,
       },
       validationErrors: errors.array(),
     });
   }
+  const imageUrl = "/" + imgUrl.path;
   const product = new ProductModel({
     title: productTitle,
     price: price,
     description: description,
-    imgUrl: imgUrl,
+    imgUrl: imageUrl,
     userId: req.user,
   });
   product
@@ -98,7 +114,6 @@ exports.getEditProduct = (req, res, next) => {
           prdId: product._id,
           userId: product.userId,
           prdTitle: product.title,
-          prdImgUrl: product.imgUrl,
           prdPrice: product.price,
           prdDesc: product.description,
         },
@@ -135,7 +150,7 @@ exports.getEditProduct = (req, res, next) => {
 exports.getPostEditProduct = (req, res, next) => {
   const prdId = req.params.productId;
   const productTitle = req.body.productTitle;
-  const imgUrl = req.body.imgUrl;
+  const imageUrl = req.file;
   const price = req.body.price;
   const description = req.body.description;
   const userId = req.body.userId;
@@ -171,8 +186,9 @@ exports.getPostEditProduct = (req, res, next) => {
       product.title = productTitle;
       product.price = price;
       product.description = description;
-      product.imgUrl = imgUrl;
-
+      if (imageUrl) {
+        product.imgUrl = "/" + imageUrl.path;
+      }
       return product.save();
     })
     .then(() => {
@@ -238,7 +254,6 @@ exports.getDeleteCompleted = (req, res, next) => {
             const cartProductItems = user.cart.items.filter((cp) => {
               return cp.productId.toString() !== prdId;
             });
-            console.log(cartProductItems);
             User.updateOne(
               { _id: user._id },
               { $set: { cart: { items: cartProductItems } } }

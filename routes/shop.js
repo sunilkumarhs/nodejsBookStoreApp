@@ -8,9 +8,14 @@ routes.get("/products", shopController.getDisplayProducts);
 routes.get("/products/:productId", shopController.getProductDetail);
 routes.get("/cart", isAuth, shopController.getCartProdcuts);
 routes.get("/orders", isAuth, shopController.getOrderedProdcuts);
-routes.post("/cart", shopController.postCartProduct);
+routes.post("/cart", isAuth, shopController.postCartProduct);
 // // routes.get("/checkout", shopController.getCheckoutProdcuts);
-routes.post("/delete-product/:productId", shopController.postDeleteProduct);
-routes.post("/post-orders", shopController.postOrderProducts);
-routes.post("/delete-order/:orderId", shopController.postDeleteOrder);
+routes.post(
+  "/delete-product/:productId",
+  isAuth,
+  shopController.postDeleteProduct
+);
+routes.post("/post-orders", isAuth, shopController.postOrderProducts);
+routes.post("/delete-order/:orderId", isAuth, shopController.postDeleteOrder);
+routes.post("/invoice-order/:orderId", isAuth, shopController.postGetInvoice);
 module.exports = routes;
