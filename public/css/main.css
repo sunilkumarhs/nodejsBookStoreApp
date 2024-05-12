@@ -134,3 +134,20 @@ body {
   width: 70%;
   padding: 0rem 1rem;
 }
+.pagination {
+  margin: 2rem 0;
+  text-align: center;
+}
+.pagination a {
+  text-decoration: none;
+  color: black;
+  padding: 0.3rem;
+  border: 1px solid rgb(95, 160, 120);
+  margin: 0 0.5rem;
+}
+
+.pagination a:hover,
+.pagination a:active,
+.pagination a.active {
+  background-color: rgb(95, 160, 120);
+}
