@@ -45,15 +45,31 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getDisplayProducts = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalPrds;
   ProductModel.find()
-    .then((products) =>
+    .countDocuments()
+    .then((numPrds) => {
+      totalPrds = numPrds;
+      return ProductModel.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
+    .then((products) => {
       res.render("shop/product-list", {
         prds: products,
         docTitle: "Book-List Page",
         path: "/products",
         isAuthenticated: req.session.isLoggedIn,
-      })
-    )
+        totalPrds: totalPrds,
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalPrds,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+        lastPage: Math.ceil(totalPrds / ITEMS_PER_PAGE),
+      });
+    })
     .catch((err) => {
       const error = new Error(err);
       error.httpStatusCode = 500;

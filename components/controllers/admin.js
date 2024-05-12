@@ -4,6 +4,8 @@ const User = require("../models/user");
 const { validationResult } = require("express-validator");
 const fileHandler = require("../../utils/file");
 
+const ITEMS_PER_PAGE = 4;
+
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/add-product", {
     docTitle: "Add-Products Page",
@@ -224,15 +226,31 @@ exports.getProducts = (req, res, next) => {
   //     })
   //   )
   //   .catch((err) => console.log(err));
+  const page = +req.query.page || 1;
+  let totalPrds;
   ProductModel.find({ userId: req.user._id })
-    .then((products) =>
+    .countDocuments()
+    .then((numPrds) => {
+      totalPrds = numPrds;
+      return ProductModel.find({ userId: req.user._id })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
+    .then((products) => {
       res.render("admin/products", {
         prds: products,
         docTitle: "Admin-Products Page",
         path: "/admin/products",
         isAuthenticated: req.session.isLoggedIn,
-      })
-    )
+        totalPrds: totalPrds,
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalPrds,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+        lastPage: Math.ceil(totalPrds / ITEMS_PER_PAGE),
+      });
+    })
     .catch((err) => {
       const error = new Error(err);
       error.httpStatusCode = 500;

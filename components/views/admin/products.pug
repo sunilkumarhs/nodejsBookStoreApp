@@ -6,9 +6,9 @@ block styles
 block content 
     main 
         div.main-section
-            h1.main-section-heading Books Container 
-        div.main-section-prds 
-            if prds.length > 0
+            h1.main-section-heading Books Container  
+        if prds.length > 0
+            div.main-section-prds
                 each product in prds 
                     div.card
                         header.card__header 
@@ -25,5 +25,15 @@ block content
                                 input(type="hidden", name="userId", value=product.userId)
                                 input(type="hidden", name="_csrf", value=csrfToken)  
                                 button.btn Delete
-            else 
-                h1 No Books to Display!! 
+            .pagination 
+                if currentPage != 1 && prevPage != 1
+                    a(href="/admin/products?page=1") 1
+                if hasPrevPage
+                    a(href="/admin/products?page="+prevPage) #{prevPage}
+                a(href="/admin/products?page="+currentPage, class="active") #{currentPage}
+                if hasNextPage
+                    a(href="/admin/products?page="+nextPage) #{nextPage}
+                if lastPage !== currentPage && lastPage !== nextPage
+                    a(href="/admin/products?page="+lastPage) #{lastPage}
+        else 
+            h1 No Books to Display!! 
