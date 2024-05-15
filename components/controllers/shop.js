@@ -8,6 +8,9 @@ const Order = require("../models/orders");
 const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
+const dotenv = require("dotenv");
+dotenv.config();
+const stripe = require("stripe")(process.env.NODE_APP_STRIPE_API);
 
 const ITEMS_PER_PAGE = 2;
 
@@ -247,56 +250,56 @@ exports.postDeleteProduct = (req, res, next) => {
   // res.redirect("/cart");
 };
 
-exports.postOrderProducts = async (req, res, next) => {
-  const cart = req.user.cart.items;
-  const cartItems = [];
-  for (item in cart) {
-    const product = await ProductModel.findById(cart[item].productId);
-    cartItems.push({ product: product, quantity: cart[item].quantity });
-  }
-  const order = new Order({ userId: req.user._id, products: cartItems });
+// exports.postOrderProducts = async (req, res, next) => {
+//   const cart = req.user.cart.items;
+//   const cartItems = [];
+//   for (item in cart) {
+//     const product = await ProductModel.findById(cart[item].productId);
+//     cartItems.push({ product: product, quantity: cart[item].quantity });
+//   }
+//   const order = new Order({ userId: req.user._id, products: cartItems });
 
-  order
-    .save()
-    .then(() => {
-      return User.updateOne(
-        { _id: req.user._id },
-        { $set: { cart: { items: [] } } }
-      );
-    })
-    .then((result) => res.redirect("/orders"))
-    .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
-    });
-  // let fetchedCart;
-  // req.user
-  //   .getCart()
-  //   .then((cart) => {
-  //     fetchedCart = cart;
-  //     return cart.getProducts();
-  //   })
-  //   .then((products) => {
-  //     return req.user.createOrder().then((order) => {
-  //       return order.addProduct(
-  //         products.map((product) => {
-  //           product.orderItem = { quantity: product.cartItem.quantity };
-  //           return product;
-  //         })
-  //       );
-  //     });
-  //   })
-  //   .then((result) => {
-  //     return fetchedCart.setProducts(null);
-  //   })
-  //   .then(() => {
-  //     res.redirect("/orders");
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-};
+//   order
+//     .save()
+//     .then(() => {
+//       return User.updateOne(
+//         { _id: req.user._id },
+//         { $set: { cart: { items: [] } } }
+//       );
+//     })
+//     .then((result) => res.redirect("/orders"))
+//     .catch((err) => {
+//       const error = new Error(err);
+//       error.httpStatusCode = 500;
+//       return next(error);
+//     });
+//   let fetchedCart;
+//   req.user
+//     .getCart()
+//     .then((cart) => {
+//       fetchedCart = cart;
+//       return cart.getProducts();
+//     })
+//     .then((products) => {
+//       return req.user.createOrder().then((order) => {
+//         return order.addProduct(
+//           products.map((product) => {
+//             product.orderItem = { quantity: product.cartItem.quantity };
+//             return product;
+//           })
+//         );
+//       });
+//     })
+//     .then((result) => {
+//       return fetchedCart.setProducts(null);
+//     })
+//     .then(() => {
+//       res.redirect("/orders");
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
 
 exports.getOrderedProdcuts = async (req, res, next) => {
   const orders = await Order.find({ userId: req.user._id });
@@ -428,9 +431,65 @@ exports.postGetInvoice = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-// exports.getCheckoutProdcuts = (req, res, next) => {
-//   res.render("shop/checkout", {
-//     docTitle: "Your Checkout",
-//     path: "/checkout",
-//   });
-// };
+exports.getCheckoutProdcuts = async (req, res, next) => {
+  const cart = req.user.cart.items;
+  const cartItems = [];
+  for (item in cart) {
+    const product = await ProductModel.findById(cart[item].productId);
+    cartItems.push({ product: product, quantity: cart[item].quantity });
+  }
+
+  const sessionId = await stripe.checkout.sessions.create({
+    mode: "payment",
+    payment_method_types: ["card"],
+    line_items: cartItems.map((p) => {
+      return {
+        price_data: {
+          currency: "inr",
+          product_data: {
+            name: p.product.title,
+            description: p.product.description,
+          },
+          unit_amount: p.product.price,
+        },
+        quantity: p.quantity,
+      };
+    }),
+    success_url: req.protocol + "://" + req.get("host") + "/checkout/success",
+    cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancle",
+  });
+
+  res.render("shop/checkout", {
+    docTitle: "Checkout",
+    checkoutItems: cartItems,
+    path: "/checkout",
+    sessionId: sessionId,
+    isAuthenticated: req.session.isLoggedIn,
+  });
+};
+
+exports.getCheckoutSuccess = async (req, res, next) => {
+  const cart = req.user.cart.items;
+  const cartItems = [];
+  for (item in cart) {
+    const product = await ProductModel.findById(cart[item].productId);
+    cartItems.push({ product: product, quantity: cart[item].quantity });
+  }
+  const order = new Order({ userId: req.user._id, products: cartItems });
+
+  order
+    .save()
+    .then(() => {
+      return User.updateOne(
+        { _id: req.user._id },
+        { $set: { cart: { items: [] } } }
+      );
+    })
+    .then((result) => res.redirect("/orders"))
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
+};
+

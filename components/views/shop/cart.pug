@@ -35,21 +35,19 @@ block content
             div.totalPrice__container 
                 div.sec1 
                     p Delivery and payment options can be selected later
-                    p Safe and Secure Payments
-                    p 100% Payment Protection, Easy Returns Policy 
                 div.sec2 
-                    p Total Price: 
-                    p Delivery Charges:
+                    p Total Price:
                 div.sec3
                     - let totalPrice = 0
                     each prd in cartProducts
                         - totalPrice = totalPrice + (prd.quantity * prd.product.price)
                     p Rs. #{totalPrice}
-                    p.free FREE
                 div.sec4
-                    form(action="/post-orders", method="POST")
-                        input(type="hidden", name="_csrf", value=csrfToken)  
-                        button ORDER NOW!
+                    //- form(action="/checkout", method="POST" )
+                    //-     input(type="hidden", name="_csrf", value=csrfToken)  
+                    //-     button Check-Out!
+                    a(href="/checkout")
+                        button Check-Out!
         else 
             h1(style="text-align:center") Cart is Empty!! 
                 

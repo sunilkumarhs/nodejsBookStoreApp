@@ -1,1 +1,53 @@
 extends ../layouts/main_layout.pug
+
+block styles 
+    link(rel="stylesheet", href="/css/cart.css")
+
+block content 
+    main 
+        div.main-section
+            h1.main-section-heading CheckOut 
+        div.cart-container 
+            table.cart__table
+                tr.table__header
+                    th ItemDetails
+                    th Price
+                    th Quantity
+                    th Subtotal
+                each product in checkoutItems 
+                    tr.table__rows
+                        th 
+                            div.prd__details 
+                                div.prd__img 
+                                    img.img__dis(src=product.product.imgUrl, alt=product.product.title) 
+                                p #{product.title}
+                        th.prd__col #{product.product.price}
+                        th.prd__col #{product.quantity}
+                        th.prd__col #{product.quantity * product.product.price}
+        div.totalPrice__checkout 
+            div.check1 
+                p Payment options provided by stripe
+                p Safe and Secure Payments
+                p 100% Payment Protection, Easy Returns Policy 
+            div.check2 
+                p Total Price: 
+                p Delivery Charges:
+            div.check3
+                - let totalPrice = 0
+                each prd in checkoutItems
+                    - totalPrice = totalPrice + (prd.quantity * prd.product.price)
+                p Rs. #{totalPrice}
+                p.free FREE
+            div.check4
+                button(id="order-btn", type="button") ORDER NOW!
+                script(src="https://js.stripe.com/v3/", async) 
+                script(type="text/javascript").
+                    const stripe = Stripe('pk_test_51PGZosSBZhRmaFbIvACN44LmMClUK9QBVKBuKVnRRZwvE3lGXm3eTETCAvG8kudX0G74pASaD1e263lxWakQDbyw000YIa9Ze1'); 
+                    const orderBtn = document.getElementById('order-btn');
+                    orderBtn.addEventListener('click', async () =>  {
+                        console.log("clicked")
+                        stripe.redirectToCheckout({
+                            sessionId: '#{sessionId}'
+                        })
+                    })
+                    

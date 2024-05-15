@@ -134,12 +134,30 @@ body {
     border-radius: 5px;
     margin: 0.5rem 1.5rem;
     margin-bottom: 0rem;
+    width:95%;
+    color: white; 
+  }
+
+  .totalPrice__checkout {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.2rem 0.2rem;
+    background: linear-gradient(to left, rgb(128, 125, 125), rgb(74, 72, 71));
+    width: fit-content;
+    border-radius: 5px;
+    margin: 0.5rem 1.5rem;
+    margin-bottom: 0rem;
     height: 7rem;
     width:95%;
     color: white; 
   }
 
   .sec1 p {
+    padding: 1rem 0;
+    margin: 0;
+  }
+
+  .check1 p {
     padding: 0.5rem 0;
     margin: 0;
   }
@@ -153,6 +171,18 @@ body {
     border: none;
     border-radius: 0.2rem;
     font-size: larger;
+    margin-top: 0.3rem;
+    color: wheat;
+    cursor: pointer;
+  }
+
+  .check4 button {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to left, rgb(218, 21, 21), rgb(152, 40, 40));
+    border: none;
+    border-radius: 0.2rem;
+    font-size: larger;
+    margin-top: 0.3rem;
     margin: 2rem 0rem;
     color: wheat;
     cursor: pointer;
