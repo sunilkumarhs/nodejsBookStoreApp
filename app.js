@@ -99,13 +99,13 @@ app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use("/500", errorController.getErrorPage500);
 app.use(errorController.getErrorPage);
-app.use((error, req, res, next) => {
-  res.status(500).render("500", {
-    docTitle: "Server Error",
-    path: "/500",
-    isAuthenticated: req.session.isLoggedIn,
-  });
-});
+// app.use((error, req, res, next) => {
+//   res.status(500).render("500", {
+//     docTitle: "Server Error",
+//     path: "/500",
+//     isAuthenticated: req.session.isLoggedIn,
+//   });
+// });
 mongoose
   .connect(process.env.NODE_APP_MONGODB_URI_KEY)
   .then((result) => {

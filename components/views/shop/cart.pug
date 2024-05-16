@@ -23,7 +23,8 @@ block content
                                     div.prd__img 
                                         img.img__dis(src=product.product.imgUrl, alt=product.product.title) 
                                     p #{product.title}
-                                    form.delete__action(action="/delete-product/"+product.product._id, method="POST")  
+                                    form.delete__action(action="/delete-product/"+product.product._id, method="POST") 
+                                        input(type="hidden", name="_csrf", value=csrfToken) 
                                         button.btn Remove
                             th.prd__col #{product.product.price}
                             th.prd__col #{product.quantity}

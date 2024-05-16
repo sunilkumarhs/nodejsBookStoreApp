@@ -222,6 +222,7 @@ exports.postCartProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prdId = req.params.productId;
+  console.log(prdId);
   // req.user
   //   .removeCartItem(prdId)
   //   .then((result) => res.redirect("/cart"))
