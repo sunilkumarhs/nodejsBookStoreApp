@@ -8,11 +8,21 @@ const Order = require("../models/orders");
 const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
+const nodeMailer = require("nodemailer");
+const sendGridTransport = require("nodemailer-sendgrid-transport");
 const dotenv = require("dotenv");
 dotenv.config();
 const stripe = require("stripe")(process.env.NODE_APP_STRIPE_API);
 
 const ITEMS_PER_PAGE = 2;
+
+const transporter = nodeMailer.createTransport(
+  sendGridTransport({
+    auth: {
+      api_key: process.env.NODE_APP_SENDGRID_API,
+    },
+  })
+);
 
 exports.getIndex = (req, res, next) => {
   const page = +req.query.page || 1;
@@ -439,7 +449,7 @@ exports.getCheckoutProdcuts = async (req, res, next) => {
     cartItems.push({ product: product, quantity: cart[item].quantity });
   }
 
-  const sessionId = await stripe.checkout.sessions.create({
+  const session = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
     line_items: cartItems.map((p) => {
@@ -450,12 +460,16 @@ exports.getCheckoutProdcuts = async (req, res, next) => {
             name: p.product.title,
             description: p.product.description,
           },
-          unit_amount: p.product.price,
+          unit_amount: p.product.price * 100,
         },
         quantity: p.quantity,
       };
     }),
-    success_url: req.protocol + "://" + req.get("host") + "/checkout/success",
+    success_url:
+      req.protocol +
+      "://" +
+      req.get("host") +
+      "/checkout/success?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancle",
   });
 
@@ -463,33 +477,60 @@ exports.getCheckoutProdcuts = async (req, res, next) => {
     docTitle: "Checkout",
     checkoutItems: cartItems,
     path: "/checkout",
-    sessionId: sessionId,
+    sessionId: session.id,
     isAuthenticated: req.session.isLoggedIn,
   });
 };
 
-exports.getCheckoutSuccess = async (req, res, next) => {
-  const cart = req.user.cart.items;
-  const cartItems = [];
-  for (item in cart) {
-    const product = await ProductModel.findById(cart[item].productId);
-    cartItems.push({ product: product, quantity: cart[item].quantity });
-  }
-  const order = new Order({ userId: req.user._id, products: cartItems });
+exports.getCheckoutCancle = (req, res, next) => {
+  transporter.sendMail({
+    to: email,
+    from: "puppetmaster010420@gmail.com",
+    subject: "Payment Cancled!",
+    html: "<h1>Your payment is cancled due to error in payments!</h1>",
+  });
+  res.redirect("/checkout");
+};
 
-  order
-    .save()
-    .then(() => {
-      return User.updateOne(
-        { _id: req.user._id },
-        { $set: { cart: { items: [] } } }
-      );
-    })
-    .then((result) => res.redirect("/orders"))
-    .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
-    });
+exports.getCheckoutSuccess = async (req, res, next) => {
+  const session_id = req.query.session_id;
+  if (session_id) {
+    // const session = await stripe.checkout.sessions.retrieve(
+    //   req.query.session_id
+    // );
+    const cart = req.user.cart.items;
+    const cartItems = [];
+    for (item in cart) {
+      const product = await ProductModel.findById(cart[item].productId);
+      cartItems.push({ product: product, quantity: cart[item].quantity });
+    }
+    const order = new Order({ userId: req.user._id, products: cartItems });
+
+    order
+      .save()
+      .then(() => {
+        return User.updateOne(
+          { _id: req.user._id },
+          { $set: { cart: { items: [] } } }
+        );
+      })
+      .then((result) => {
+        const email = req.user.email;
+        res.redirect("/orders");
+        return transporter.sendMail({
+          to: email,
+          from: "puppetmaster010420@gmail.com",
+          subject: "Successfull Payment!",
+          html: "<h1>Your payment is successfull!</h1>",
+        });
+      })
+      .catch((err) => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
+  } else {
+    res.redirect("/400");
+  }
 };
 

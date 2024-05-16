@@ -40,12 +40,11 @@ block content
                 p.free FREE
             div.check4
                 button(id="order-btn", type="button") ORDER NOW!
-                script(src="https://js.stripe.com/v3/", async) 
-                script(type="text/javascript").
+                script(src="https://js.stripe.com/v3/") 
+                script.
                     const stripe = Stripe('pk_test_51PGZosSBZhRmaFbIvACN44LmMClUK9QBVKBuKVnRRZwvE3lGXm3eTETCAvG8kudX0G74pASaD1e263lxWakQDbyw000YIa9Ze1'); 
                     const orderBtn = document.getElementById('order-btn');
                     orderBtn.addEventListener('click', async () =>  {
-                        console.log("clicked")
                         stripe.redirectToCheckout({
                             sessionId: '#{sessionId}'
                         })
