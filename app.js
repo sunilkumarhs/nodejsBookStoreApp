@@ -52,7 +52,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 app.set("view engine", "pug");
-app.set("views", "components/views");
+app.set("views", path.join(__dirname, "components/views"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   multur({ storage: fileStorage, fileFilter: fileFilter }).single("imgUrl")
