@@ -1,32 +1,48 @@
-const mongodb = require("mongodb");
-const MongoClient = mongodb.MongoClient;
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config();
 
-let _db;
-const mongoConnect = (callback) => {
-  MongoClient.connect(
-    "mongodb+srv://puppet1718:Puppet010420@cluster010420.tdgtki9.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster010420"
-  )
-    .then((client) => {
-      console.log("connected");
-      _db = client.db();
-      callback();
-    })
-    .catch((err) => {
-      console.log(err);
-      throw err;
-    });
-};
-
-const getDb = () => {
-  if (_db) {
-    return _db;
-  } else {
-    throw "No Database found!";
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.NODE_APP_MONGODB_URI_KEY);
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
   }
 };
 
-exports.mongoConnect = mongoConnect;
-exports.getDb = getDb;
+module.exports = connectDB;
+// const mongodb = require("mongodb");
+// const MongoClient = mongodb.MongoClient;
+// const dotenv = require("dotenv");
+
+// dotenv.config();
+
+// let _db;
+// const mongoConnect = (callback) => {
+//   MongoClient.connect(process.env.NODE_APP_MONGODB_URI_KEY)
+//     .then((client) => {
+//       console.log("connected");
+//       _db = client.db();
+//       callback();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       throw err;
+//     });
+// };
+
+// const getDb = () => {
+//   if (_db) {
+//     return _db;
+//   } else {
+//     throw "No Database found!";
+//   }
+// };
+
+// exports.mongoConnect = mongoConnect;
+// exports.getDb = getDb;
 
 // "mongodb+srv://sunilkumarhs974117:Puppet010420@cluster1718.401mz4b.mongodb.net/test?retryWrites=true"
 
